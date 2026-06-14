@@ -99,15 +99,16 @@ export const LEARNING_UNITS: LearningUnit[] = [
   {
     id: 'u001',
     title: 'AI 时代：从工具到伙伴',
-    description: '理解 AI 的本质 -- 它不是取代你的工具，而是放大你能力的伙伴。了解大语言模型的工作原理，建立正确的 AI 协作心态。',
+    description: '理解 AI 的本质 -- 它不是取代你的工具，而是放大你能力的伙伴。了解大语言模型的工作原理，体验腾讯混元大模型和元宝 AI 助手，建立正确的 AI 协作心态。',
     phase: 'day30',
     roles: [],
     duration: 30,
     difficulty: 1,
-    tools: [],
+    tools: ['腾讯元宝', 'ChatGPT', 'Claude'],
     objectives: [
       '解释 AI 和大语言模型的基本工作原理',
       '区分"使用 AI"和"与 AI 协作"的本质差异',
+      '体验腾讯元宝 AI 助手，完成第一个 AI 对话',
       '描述 AI Native 组织的工作方式',
     ],
     prerequisites: [],
