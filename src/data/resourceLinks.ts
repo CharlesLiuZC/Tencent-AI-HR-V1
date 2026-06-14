@@ -1,10 +1,11 @@
-// 学习资源链接 - 每个学习单元的真实资源（已验证）
-import { Role, Phase } from '../types';
+// 学习资源链接 - 分角色差异化推荐
+// 原则：1. 所有链接必须真实可访问  2. 非技术岗位以视频/产品体验为主  3. 技术岗位以文档/代码为主
+import { Role } from '../types';
 
 export interface ResourceLink {
   unitId: string;
   resources: {
-    type: 'github' | 'bilibili' | 'huggingface' | 'x' | 'article' | 'docs' | 'tencent';
+    type: 'github' | 'bilibili' | 'huggingface' | 'x' | 'docs' | 'tencent' | 'product';
     title: string;
     url: string;
     description: string;
@@ -18,37 +19,55 @@ export const RESOURCE_LINKS: ResourceLink[] = [
   {
     unitId: 'u001',
     resources: [
+      // 非技术岗位：视频 + 产品体验
       {
         type: 'bilibili',
-        title: '【李宏毅】2024 最新生成式 AI 导论',
-        url: 'https://www.bilibili.com/video/BV1Rz421M7Kp',
-        description: '台湾大学李宏毅教授的 AI 入门课程，通俗易懂，适合零基础',
+        title: '📺 B站热门：AI 入门科普合集',
+        url: 'https://search.bilibili.com/all?keyword=AI%E5%85%A5%E9%97%A8%E7%A7%91%E6%99%AE&order=click',
+        description: 'B站播放量最高的 AI 入门科普视频，选一个你喜欢的风格看',
         difficulty: 'beginner',
-        roles: 'all',
-      },
-      {
-        type: 'article',
-        title: 'What Is ChatGPT Doing and Why Does It Work',
-        url: 'https://writings.stephenwolfram.com/2023/02/what-is-chatgpt-doing-and-why-does-it-work/',
-        description: 'Stephen Wolfram 用通俗语言解释大模型工作原理',
-        difficulty: 'beginner',
-        roles: 'all',
-      },
-      {
-        type: 'x',
-        title: 'Andrej Karpathy - AI 核心概念解读',
-        url: 'https://x.com/karpathy',
-        description: '特斯拉前 AI 总监，经常分享 AI 核心概念和前沿思考',
-        difficulty: 'beginner',
-        roles: 'all',
+        roles: ['art', 'design', 'ops'],
       },
       {
         type: 'tencent',
-        title: '腾讯元宝 — 腾讯 AI 助手体验',
+        title: '🐧 腾讯元宝 — 你的第一个 AI 助手',
         url: 'https://yuanbao.tencent.com',
-        description: '腾讯混元大模型驱动的 AI 助手，体验腾讯 AI 能力',
+        description: '腾讯出品的 AI 助手，支持对话、创作、搜索。先体验一下！',
         difficulty: 'beginner',
-        roles: 'all',
+        roles: ['art', 'design', 'ops'],
+      },
+      {
+        type: 'product',
+        title: '💬 ChatGPT — 全球最流行的 AI 对话工具',
+        url: 'https://chatgpt.com',
+        description: 'OpenAI 的 AI 助手，注册即可免费使用',
+        difficulty: 'beginner',
+        roles: ['art', 'design', 'ops'],
+      },
+      // 技术岗位：文档 + 论文
+      {
+        type: 'docs',
+        title: '📚 What Is ChatGPT Doing — Stephen Wolfram 通俗解读',
+        url: 'https://writings.stephenwolfram.com/2023/02/what-is-chatgpt-doing-and-why-does-it-work/',
+        description: '用通俗语言解释大语言模型的工作原理，技术向深度好文',
+        difficulty: 'beginner',
+        roles: ['dev'],
+      },
+      {
+        type: 'x',
+        title: '𝕏 Andrej Karpathy — AI 核心概念推特',
+        url: 'https://x.com/karpathy',
+        description: '特斯拉前 AI 总监，经常用推特长文解释 AI 核心概念',
+        difficulty: 'beginner',
+        roles: ['dev'],
+      },
+      {
+        type: 'tencent',
+        title: '🐧 腾讯混元大模型 — 体验腾讯 AI 能力',
+        url: 'https://cloud.tencent.com/product/hunyuan',
+        description: '腾讯自研大模型，支持文本/图像/视频/3D生成',
+        difficulty: 'beginner',
+        roles: ['dev'],
       },
     ],
   },
@@ -56,52 +75,70 @@ export const RESOURCE_LINKS: ResourceLink[] = [
   {
     unitId: 'u002',
     resources: [
+      // 非技术岗位：视频教程 + 实操模板
+      {
+        type: 'bilibili',
+        title: '📺 B站热门：ChatGPT 提示词教程',
+        url: 'https://search.bilibili.com/all?keyword=ChatGPT%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%95%99%E7%A8%8B&order=click',
+        description: 'B站播放量最高的提示词教程，跟着视频一步步学',
+        difficulty: 'beginner',
+        roles: ['art', 'design', 'ops'],
+      },
+      {
+        type: 'product',
+        title: '📝 awesome-chatgpt-prompts — 提示词模板大全',
+        url: 'https://github.com/f/awesome-chatgpt-prompts',
+        description: '海量现成的提示词模板，直接复制粘贴就能用！',
+        difficulty: 'beginner',
+        roles: ['art', 'design', 'ops'],
+      },
+      {
+        type: 'product',
+        title: '🎨 AI 绘画提示词宝典',
+        url: 'https://search.bilibili.com/all?keyword=Midjourney%E6%8F%90%E7%A4%BA%E8%AF%8D&order=click',
+        description: '美术必看！学习如何用文字描述生成你想要的画面',
+        difficulty: 'beginner',
+        roles: ['art'],
+      },
+      {
+        type: 'product',
+        title: '📊 用 AI 写策划案 — 提示词实战',
+        url: 'https://search.bilibili.com/all?keyword=AI%E5%86%99%E7%AD%96%E5%88%92%E6%A1%88&order=click',
+        description: '策划必看！如何用 AI 辅助写策划案、竞品分析',
+        difficulty: 'beginner',
+        roles: ['design'],
+      },
+      {
+        type: 'product',
+        title: '📈 用 AI 做运营 — 提示词实战',
+        url: 'https://search.bilibili.com/all?keyword=AI%E8%BF%90%E8%90%A5%E5%AE%9E%E6%88%98&order=click',
+        description: '运营必看！如何用 AI 写文案、分析数据、做社群',
+        difficulty: 'beginner',
+        roles: ['ops'],
+      },
+      // 技术岗位：官方文档 + 代码仓库
       {
         type: 'github',
-        title: 'Prompt Engineering Guide (DAIR.AI) - 300万学习者',
+        title: '🐙 Prompt Engineering Guide — 最全面的 Prompt 指南',
         url: 'https://github.com/dair-ai/Prompt-Engineering-Guide',
-        description: '最全面的 Prompt Engineering 指南，覆盖 13 种语言，社区持续维护',
+        description: '300万学习者，覆盖 13 种语言，含所有进阶技巧',
         difficulty: 'beginner',
-        roles: 'all',
+        roles: ['dev'],
       },
       {
         type: 'github',
-        title: 'Anthropic Prompt Engineering 交互式教程',
+        title: '🐙 Anthropic Prompt Engineering 交互式教程',
         url: 'https://github.com/anthropics/courses/tree/master/prompt_engineering_interactive_tutorial',
-        description: 'Claude 官方交互式 Prompt 教程，一步步实操学习',
+        description: 'Claude 官方交互式教程，一步步实操学习 Prompt 技巧',
         difficulty: 'beginner',
-        roles: 'all',
+        roles: ['dev'],
       },
       {
         type: 'docs',
-        title: 'OpenAI 官方 Prompt 最佳实践',
+        title: '📚 OpenAI 官方 Prompt 最佳实践',
         url: 'https://platform.openai.com/docs/guides/prompt-engineering',
-        description: 'OpenAI 官方权威指南，涵盖策略、技巧和示例',
+        description: 'OpenAI 官方权威指南',
         difficulty: 'beginner',
-        roles: 'all',
-      },
-      {
-        type: 'github',
-        title: 'awesome-chatgpt-prompts - 提示词模板库',
-        url: 'https://github.com/f/awesome-chatgpt-prompts',
-        description: '海量经过验证的 ChatGPT 提示词模板，即取即用',
-        difficulty: 'beginner',
-        roles: ['design', 'ops', 'art'],
-      },
-      {
-        type: 'bilibili',
-        title: '【花酱】ChatGPT 提示词工程入门到进阶',
-        url: 'https://www.bilibili.com/video/BV1No4y1t7Zn',
-        description: '中文 Prompt 教程，适合非技术岗位零基础学习',
-        difficulty: 'beginner',
-        roles: ['design', 'ops', 'art'],
-      },
-      {
-        type: 'x',
-        title: 'Lilian Weng - Prompt Engineering 深度综述',
-        url: 'https://x.com/lilianweng',
-        description: 'OpenAI 研究员的技术博客，适合程序岗位深入理解',
-        difficulty: 'intermediate',
         roles: ['dev'],
       },
     ],
@@ -110,36 +147,38 @@ export const RESOURCE_LINKS: ResourceLink[] = [
   {
     unitId: 'u003',
     resources: [
+      // 非技术岗位
       {
-        type: 'github',
-        title: 'Anthropic Courses - 官方课程合集',
-        url: 'https://github.com/anthropics/courses',
-        description: 'Anthropic 官方 5 门课程：API 基础、Prompt 教程、实战 Prompt、评估、Tool Use',
+        type: 'bilibili',
+        title: '📺 B站热门：ChatGPT 办公实战教程',
+        url: 'https://search.bilibili.com/all?keyword=ChatGPT%E5%8A%9E%E5%85%AC%E5%AE%9E%E6%88%98&order=click',
+        description: '用 ChatGPT 写邮件、做报告、翻译、整理会议纪要',
         difficulty: 'beginner',
-        roles: 'all',
+        roles: ['art', 'design', 'ops'],
       },
       {
+        type: 'product',
+        title: '💬 Claude — Anthropic 的 AI 助手',
+        url: 'https://claude.ai',
+        description: '擅长长文本分析和深度思考的 AI 助手，免费注册使用',
+        difficulty: 'beginner',
+        roles: ['art', 'design', 'ops'],
+      },
+      // 技术岗位
+      {
         type: 'github',
-        title: 'Anthropic Cookbook - 实战代码食谱',
-        url: 'https://github.com/anthropics/anthropic-cookbook',
-        description: '45k Stars，覆盖 RAG、Tool Use、分类、摘要等实战场景的代码示例',
-        difficulty: 'intermediate',
+        title: '🐙 Anthropic Courses — 官方 5 门课程',
+        url: 'https://github.com/anthropics/courses',
+        description: 'API 基础、Prompt 教程、实战 Prompt、评估、Tool Use',
+        difficulty: 'beginner',
         roles: ['dev'],
       },
       {
-        type: 'bilibili',
-        title: '【跟李沐学AI】用 ChatGPT 提高工作效率',
-        url: 'https://www.bilibili.com/video/BV1Tm4y1s7UJ',
-        description: '著名 AI 教育者李沐的实战教程',
-        difficulty: 'beginner',
-        roles: 'all',
-      },
-      {
-        type: 'docs',
-        title: 'Claude 官方文档',
-        url: 'https://docs.anthropic.com/en/docs',
-        description: 'Anthropic Claude 的完整 API 文档和使用指南',
-        difficulty: 'beginner',
+        type: 'github',
+        title: '🐙 Anthropic Cookbook — 实战代码食谱 (45k Stars)',
+        url: 'https://github.com/anthropics/anthropic-cookbook',
+        description: 'RAG、Tool Use、分类、摘要等完整场景的代码示例',
+        difficulty: 'intermediate',
         roles: ['dev'],
       },
     ],
@@ -148,45 +187,55 @@ export const RESOURCE_LINKS: ResourceLink[] = [
   {
     unitId: 'u004',
     resources: [
+      // 美术：视频教程为主
       {
         type: 'bilibili',
-        title: '【秋葉aaaki】Stable Diffusion 一键安装教程',
+        title: '📺 秋葉aaaki — Stable Diffusion 一键安装教程 (731万播放)',
         url: 'https://www.bilibili.com/video/BV1iM4y1y7oA',
-        description: 'B站最火的 SD 安装教程，傻瓜式一键部署，百万播放',
+        description: 'B站最火的 SD 安装教程！傻瓜式一键部署，解压即用',
         difficulty: 'beginner',
         roles: ['art'],
       },
       {
-        type: 'huggingface',
-        title: 'Stable Diffusion XL 在线体验',
-        url: 'https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0',
-        description: 'HuggingFace 上的 SDXL 模型页，可直接在线体验',
-        difficulty: 'beginner',
-        roles: ['art', 'design'],
-      },
-      {
-        type: 'docs',
-        title: 'Midjourney 官方入门指南',
-        url: 'https://docs.midjourney.com',
-        description: 'Midjourney 官方文档，包含所有参数和使用方法',
+        type: 'bilibili',
+        title: '📺 B站热门：Midjourney 入门教程',
+        url: 'https://search.bilibili.com/all?keyword=Midjourney%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B&order=click',
+        description: 'B站播放量最高的 Midjourney 教程，美术必看',
         difficulty: 'beginner',
         roles: ['art', 'design'],
       },
       {
         type: 'bilibili',
-        title: '【设计师】Midjourney 从入门到精通',
-        url: 'https://www.bilibili.com/video/BV1DX4y1V7Jn',
-        description: '中文 Midjourney 全面教程，含风格控制和参数详解',
+        title: '📺 B站热门：AI 绘画风格教程',
+        url: 'https://search.bilibili.com/all?keyword=AI%E7%BB%98%E7%94%BB%E9%A3%8E%E6%A0%BC%E6%95%99%E7%A8%8B&order=click',
+        description: '学习各种 AI 绘画风格：二次元、写实、赛博朋克、国风...',
+        difficulty: 'beginner',
+        roles: ['art'],
+      },
+      {
+        type: 'tencent',
+        title: '🐧 腾讯混元生图 — 中文 AI 图像生成',
+        url: 'https://cloud.tencent.com/product/hunyuan',
+        description: '腾讯自研 AI 图像生成，中文理解能力强',
         difficulty: 'beginner',
         roles: ['art', 'design'],
       },
       {
-        type: 'tencent',
-        title: '腾讯混元生图 — AI 图像生成',
-        url: 'https://cloud.tencent.com/product/hunyuan',
-        description: '腾讯混元大模型的图像生成能力，支持中文理解',
+        type: 'product',
+        title: '🎨 Midjourney 官方 — AI 图像生成',
+        url: 'https://midjourney.com',
+        description: '全球最流行的 AI 图像生成工具，需 Discord 使用',
         difficulty: 'beginner',
         roles: ['art', 'design'],
+      },
+      // 技术岗位
+      {
+        type: 'huggingface',
+        title: '🤗 Stable Diffusion XL — 在线体验',
+        url: 'https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0',
+        description: 'HuggingFace 上的 SDXL 模型，可直接在线体验',
+        difficulty: 'intermediate',
+        roles: ['dev'],
       },
     ],
   },
@@ -196,33 +245,33 @@ export const RESOURCE_LINKS: ResourceLink[] = [
     resources: [
       {
         type: 'docs',
-        title: 'GitHub Copilot 官方文档',
+        title: '📚 GitHub Copilot 官方文档',
         url: 'https://docs.github.com/en/copilot',
-        description: '官方使用指南，含免费版（2000次/月补全）、Pro版（$10/月无限补全）',
+        description: '官方使用指南，含免费版（2000次/月补全）说明',
         difficulty: 'beginner',
         roles: ['dev'],
       },
       {
-        type: 'docs',
-        title: 'Cursor AI 编辑器官方文档',
+        type: 'product',
+        title: '💻 Cursor — AI 原生代码编辑器',
         url: 'https://cursor.com',
-        description: 'AI 原生代码编辑器，集成多种 AI 模型，支持 Agent 模式',
-        difficulty: 'beginner',
-        roles: ['dev'],
-      },
-      {
-        type: 'github',
-        title: 'GitHub Copilot 官方仓库',
-        url: 'https://github.com/features/copilot',
-        description: 'GitHub Copilot 功能介绍和订阅入口',
+        description: '集成多种 AI 模型的代码编辑器，支持 Agent 模式',
         difficulty: 'beginner',
         roles: ['dev'],
       },
       {
         type: 'bilibili',
-        title: '【技术蛋老师】GitHub Copilot 全面教程',
-        url: 'https://www.bilibili.com/video/BV1jM411L7AH',
-        description: '中文 Copilot 使用教程，从安装到实战',
+        title: '📺 B站热门：GitHub Copilot 使用教程',
+        url: 'https://search.bilibili.com/all?keyword=GitHub+Copilot%E6%95%99%E7%A8%8B&order=click',
+        description: 'B站上的 Copilot 中文教程',
+        difficulty: 'beginner',
+        roles: ['dev'],
+      },
+      {
+        type: 'bilibili',
+        title: '📺 B站热门：Cursor AI 编辑器教程',
+        url: 'https://search.bilibili.com/all?keyword=Cursor+AI%E7%BC%96%E8%BE%91%E5%99%A8&order=click',
+        description: 'B站上的 Cursor 使用教程',
         difficulty: 'beginner',
         roles: ['dev'],
       },
@@ -232,29 +281,31 @@ export const RESOURCE_LINKS: ResourceLink[] = [
   {
     unitId: 'u006',
     resources: [
+      // 非技术岗位
       {
         type: 'bilibili',
-        title: '【用AI做数据分析】ChatGPT + Excel 实战教程',
-        url: 'https://www.bilibili.com/video/BV1Qz4y1K7dN',
-        description: '非技术人员也能学会的 AI 数据分析，运营/策划必看',
+        title: '📺 B站热门：ChatGPT 做数据分析',
+        url: 'https://search.bilibili.com/all?keyword=ChatGPT%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90&order=click',
+        description: '运营/策划必看！用 AI 分析 Excel 数据、生成图表',
         difficulty: 'beginner',
         roles: ['ops', 'design'],
       },
+      {
+        type: 'product',
+        title: '📊 腾讯元宝 — 数据分析功能',
+        url: 'https://yuanbao.tencent.com',
+        description: '直接把 Excel/CSV 文件丢给元宝，让它帮你分析',
+        difficulty: 'beginner',
+        roles: ['ops', 'design'],
+      },
+      // 技术岗位
       {
         type: 'github',
-        title: 'pandas-ai - 用自然语言分析数据',
+        title: '🐙 pandas-ai — 用自然语言分析数据',
         url: 'https://github.com/sinaptik-ai/pandas-ai',
-        description: '用自然语言查询 pandas DataFrame，适合有 Python 基础的运营',
+        description: '用自然语言查询 pandas DataFrame',
         difficulty: 'intermediate',
-        roles: ['dev', 'ops'],
-      },
-      {
-        type: 'docs',
-        title: '腾讯混元 — 数据分析与文本生成',
-        url: 'https://cloud.tencent.com/product/hunyuan',
-        description: '腾讯混元大模型的数据分析能力，支持中文长文本',
-        difficulty: 'beginner',
-        roles: ['ops', 'design'],
+        roles: ['dev'],
       },
     ],
   },
@@ -262,35 +313,29 @@ export const RESOURCE_LINKS: ResourceLink[] = [
   {
     unitId: 'u007',
     resources: [
+      // 非技术岗位
+      {
+        type: 'bilibili',
+        title: '📺 B站热门：ChatGPT 高级提示词技巧',
+        url: 'https://search.bilibili.com/all?keyword=ChatGPT%E9%AB%98%E7%BA%A7%E6%8F%90%E7%A4%BA%E8%AF%8D&order=click',
+        description: '思维链、角色扮演、Few-shot 等进阶技巧的视频教程',
+        difficulty: 'intermediate',
+        roles: ['art', 'design', 'ops'],
+      },
+      // 技术岗位
       {
         type: 'github',
-        title: 'Prompt Engineering Guide - 进阶技巧',
+        title: '🐙 Prompt Engineering Guide — 进阶技巧全集',
         url: 'https://github.com/dair-ai/Prompt-Engineering-Guide/blob/main/pages/techniques.en.mdx',
-        description: '涵盖 CoT、Few-shot、Zero-shot、Self-Consistency、ToT 等所有进阶技巧',
+        description: 'CoT、Few-shot、Zero-shot、Self-Consistency、ToT 等所有技巧',
         difficulty: 'intermediate',
-        roles: 'all',
-      },
-      {
-        type: 'github',
-        title: 'Anthropic Real World Prompting 课程',
-        url: 'https://github.com/anthropics/courses/tree/master/real_world_prompting',
-        description: '学习如何将 Prompt 技巧应用到复杂的现实场景中',
-        difficulty: 'intermediate',
-        roles: 'all',
-      },
-      {
-        type: 'github',
-        title: 'Chain-of-Thought Prompting 原始论文',
-        url: 'https://github.com/kojima-takeshi188/zero_shot_cot',
-        description: '思维链提示的原始论文和代码实现',
-        difficulty: 'advanced',
         roles: ['dev'],
       },
       {
-        type: 'bilibili',
-        title: '【李沐论文精读】Chain of Thought 思维链',
-        url: 'https://www.bilibili.com/video/BV1GM4y1s7Kd',
-        description: '李沐精读 CoT 论文，深入浅出讲解原理',
+        type: 'github',
+        title: '🐙 Anthropic Real World Prompting 课程',
+        url: 'https://github.com/anthropics/courses/tree/master/real_world_prompting',
+        description: '学习如何将 Prompt 技巧应用到复杂的现实场景中',
         difficulty: 'intermediate',
         roles: ['dev'],
       },
@@ -301,50 +346,20 @@ export const RESOURCE_LINKS: ResourceLink[] = [
     unitId: 'u008',
     resources: [
       {
-        type: 'github',
-        title: 'Prompt Engineering Guide - 风险与误用',
-        url: 'https://github.com/dair-ai/Prompt-Engineering-Guide/blob/main/pages/risks.en.mdx',
-        description: '对抗性提示、事实性问题、偏见等 AI 风险的全面分析',
+        type: 'bilibili',
+        title: '📺 B站热门：AI 安全与伦理科普',
+        url: 'https://search.bilibili.com/all?keyword=AI%E5%AE%89%E5%85%A8%E4%BC%A6%E7%90%86&order=click',
+        description: '了解 AI 使用中的隐私、版权、偏见等问题',
         difficulty: 'beginner',
-        roles: 'all',
+        roles: ['art', 'design', 'ops'],
       },
       {
         type: 'docs',
-        title: 'Anthropic - 负责任的 AI 使用指南',
+        title: '📚 Anthropic — 负责任的 AI 使用政策',
         url: 'https://docs.anthropic.com/en/docs/about-claude/use-case-policy',
         description: 'Claude 的使用政策和伦理指南',
         difficulty: 'beginner',
-        roles: 'all',
-      },
-    ],
-  },
-  // ==================== u009: 30天阶段实战项目 ====================
-  {
-    unitId: 'u009',
-    resources: [
-      {
-        type: 'github',
-        title: 'Anthropic Cookbook - 分类实战',
-        url: 'https://github.com/anthropics/anthropic-cookbook/tree/main/capabilities/classification',
-        description: '用 Claude 做文本分类的实战代码',
-        difficulty: 'intermediate',
-        roles: ['dev', 'ops'],
-      },
-      {
-        type: 'github',
-        title: 'Anthropic Cookbook - RAG 实战',
-        url: 'https://github.com/anthropics/anthropic-cookbook/tree/main/capabilities/retrieval_augmented_generation',
-        description: '检索增强生成的完整实现代码',
-        difficulty: 'intermediate',
         roles: ['dev'],
-      },
-      {
-        type: 'docs',
-        title: 'Anthropic Prompt Evaluations 课程',
-        url: 'https://github.com/anthropics/courses/tree/master/prompt_evaluations',
-        description: '学习如何编写生产级 Prompt 评估',
-        difficulty: 'intermediate',
-        roles: ['dev', 'design'],
       },
     ],
   },
@@ -353,26 +368,26 @@ export const RESOURCE_LINKS: ResourceLink[] = [
     unitId: 'u011',
     resources: [
       {
-        type: 'github',
-        title: 'Anthropic Cookbook - 完整工作流示例',
-        url: 'https://github.com/anthropics/anthropic-cookbook',
-        description: '45k Stars，覆盖 RAG、Tool Use、Agent 等完整工作流的代码食谱',
+        type: 'bilibili',
+        title: '📺 B站热门：AI 工作流搭建教程',
+        url: 'https://search.bilibili.com/all?keyword=AI%E5%B7%A5%E4%BD%9C%E6%B5%81%E6%90%AD%E5%BB%BA&order=click',
+        description: '学习如何把 AI 工具串成工作流，自动化你的日常工作',
         difficulty: 'intermediate',
-        roles: 'all',
+        roles: ['art', 'design', 'ops'],
       },
       {
         type: 'github',
-        title: 'Anthropic Tool Use 课程',
-        url: 'https://github.com/anthropics/courses/tree/master/tool_use',
-        description: '学习如何让 Claude 调用外部工具，构建 AI 工作流',
+        title: '🐙 Anthropic Cookbook — 完整工作流示例',
+        url: 'https://github.com/anthropics/anthropic-cookbook',
+        description: '45k Stars，覆盖 RAG、Tool Use、Agent 等完整工作流',
         difficulty: 'intermediate',
         roles: ['dev'],
       },
       {
         type: 'docs',
-        title: '腾讯混元 API 开发者文档',
+        title: '📚 腾讯混元 API 开发者文档',
         url: 'https://cloud.tencent.com/document/product/1729',
-        description: '腾讯混元大模型 API 接入指南，含快速开始和接口文档',
+        description: '腾讯混元大模型 API 接入指南',
         difficulty: 'intermediate',
         roles: ['dev'],
       },
@@ -383,58 +398,36 @@ export const RESOURCE_LINKS: ResourceLink[] = [
     unitId: 'u012',
     resources: [
       {
-        type: 'github',
-        title: 'ComfyUI 官方仓库',
-        url: 'https://github.com/comfyanonymous/ComfyUI',
-        description: '节点式 AI 图像生成工作流，支持自定义流程和 LoRA',
-        difficulty: 'advanced',
-        roles: ['art'],
-      },
-      {
         type: 'bilibili',
-        title: '【秋葉aaaki】ComfyUI 从入门到精通',
-        url: 'https://www.bilibili.com/video/BV1dM4y1L7dJ',
-        description: 'B站最详细的 ComfyUI 中文教程，含工作流搭建实战',
+        title: '📺 秋葉aaaki — ComfyUI 入门教程',
+        url: 'https://search.bilibili.com/all?keyword=ComfyUI%E5%85%A5%E9%97%A8%E7%A7%8B%E8%91%89&order=click',
+        description: '秋葉出品的 ComfyUI 教程，美术进阶必看',
         difficulty: 'intermediate',
         roles: ['art'],
       },
       {
-        type: 'huggingface',
-        title: 'LoRA 微调官方文档',
-        url: 'https://huggingface.co/docs/diffusers/training/lora',
-        description: 'HuggingFace 官方 LoRA 训练文档，适合进阶美术',
+        type: 'bilibili',
+        title: '📺 B站热门：LoRA 训练教程',
+        url: 'https://search.bilibili.com/all?keyword=LoRA%E8%AE%AD%E7%BB%83%E6%95%99%E7%A8%8B&order=click',
+        description: '学习训练自己的 LoRA 模型，定制专属画风',
+        difficulty: 'advanced',
+        roles: ['art'],
+      },
+      {
+        type: 'github',
+        title: '🐙 ComfyUI 官方仓库',
+        url: 'https://github.com/comfyanonymous/ComfyUI',
+        description: '节点式 AI 图像生成工作流工具',
         difficulty: 'advanced',
         roles: ['art', 'dev'],
       },
       {
         type: 'huggingface',
-        title: 'Stable Diffusion 社区模型库',
+        title: '🤗 HuggingFace 图像生成模型库',
         url: 'https://huggingface.co/models?pipeline_tag=text-to-image&sort=trending',
-        description: 'HuggingFace 上的海量图像生成模型，可在线体验',
+        description: '海量图像生成模型，可在线体验',
         difficulty: 'intermediate',
-        roles: ['art'],
-      },
-    ],
-  },
-  // ==================== u013: 专业 AI 工具深度探索（策划） ====================
-  {
-    unitId: 'u013',
-    resources: [
-      {
-        type: 'docs',
-        title: 'Notion AI 官方教程',
-        url: 'https://www.notion.so/product/ai',
-        description: 'Notion AI 功能介绍，适合策划做文档整理和知识管理',
-        difficulty: 'beginner',
-        roles: ['design'],
-      },
-      {
-        type: 'bilibili',
-        title: '【策划必看】用 AI 做竞品分析和数值策划',
-        url: 'https://www.bilibili.com/video/BV1Qz4y1K7dN',
-        description: '非技术策划如何用 AI 辅助日常工作',
-        difficulty: 'beginner',
-        roles: ['design'],
+        roles: ['art', 'dev'],
       },
     ],
   },
@@ -444,34 +437,26 @@ export const RESOURCE_LINKS: ResourceLink[] = [
     resources: [
       {
         type: 'github',
-        title: 'Claude Code - Anthropic CLI 编程助手',
+        title: '🐙 Claude Code — Anthropic CLI 编程助手',
         url: 'https://github.com/anthropics/claude-code',
-        description: 'Anthropic 的 CLI 编程助手，支持复杂代码任务和多文件编辑',
+        description: '支持复杂代码任务和多文件编辑的 CLI 工具',
         difficulty: 'advanced',
         roles: ['dev'],
       },
       {
-        type: 'docs',
-        title: 'Cursor 官方文档',
-        url: 'https://cursor.com',
-        description: 'AI 原生代码编辑器，支持 Agent 模式和多模型切换',
-        difficulty: 'intermediate',
-        roles: ['dev'],
-      },
-      {
         type: 'github',
-        title: 'Anthropic API Fundamentals 课程',
+        title: '🐙 Anthropic API Fundamentals 课程',
         url: 'https://github.com/anthropics/courses/tree/master/anthropic_api_fundamentals',
-        description: 'Claude API 基础课程：SDK 使用、模型参数、多模态 Prompt、流式响应',
+        description: 'Claude API 基础：SDK、模型参数、多模态、流式响应',
         difficulty: 'intermediate',
         roles: ['dev'],
       },
       {
         type: 'github',
-        title: 'Claude Agent SDK 示例',
-        url: 'https://github.com/anthropics/anthropic-cookbook/tree/main/claude_agent_sdk',
-        description: '用 Claude Agent SDK 构建自定义 AI Agent 的代码示例',
-        difficulty: 'advanced',
+        title: '🐙 Anthropic Tool Use 课程',
+        url: 'https://github.com/anthropics/courses/tree/master/tool_use',
+        description: '学习如何让 Claude 调用外部工具',
+        difficulty: 'intermediate',
         roles: ['dev'],
       },
     ],
@@ -481,42 +466,28 @@ export const RESOURCE_LINKS: ResourceLink[] = [
     unitId: 'u016',
     resources: [
       {
-        type: 'docs',
-        title: 'Notion AI — 团队协作与知识管理',
+        type: 'product',
+        title: '📝 Notion AI — 团队协作与知识管理',
         url: 'https://www.notion.so/product/ai',
         description: '用 Notion AI 进行团队文档协作和知识沉淀',
         difficulty: 'beginner',
         roles: 'all',
       },
       {
-        type: 'docs',
-        title: '腾讯会议 AI 助手',
+        type: 'tencent',
+        title: '🐧 腾讯会议 — AI 助手',
         url: 'https://meeting.tencent.com',
-        description: '腾讯会议内置的 AI 助手，支持会前/会中/会后全流程',
+        description: '腾讯会议内置 AI 助手，支持会前/会中/会后全流程',
         difficulty: 'beginner',
         roles: 'all',
       },
-    ],
-  },
-  // ==================== u017: 60天阶段实战项目 ====================
-  {
-    unitId: 'u017',
-    resources: [
       {
-        type: 'github',
-        title: 'Anthropic Cookbook - 客服 Agent 实战',
-        url: 'https://github.com/anthropics/anthropic-cookbook/blob/main/tool_use/customer_service_agent.ipynb',
-        description: '用 Claude 构建客服 Agent 的完整代码',
-        difficulty: 'intermediate',
-        roles: ['dev', 'ops'],
-      },
-      {
-        type: 'github',
-        title: 'Anthropic Cookbook - SQL 查询实战',
-        url: 'https://github.com/anthropics/anthropic-cookbook/blob/main/misc/how_to_make_sql_queries.ipynb',
-        description: '用 Claude 做 SQL 查询的实战代码',
-        difficulty: 'intermediate',
-        roles: ['dev', 'ops'],
+        type: 'tencent',
+        title: '🐧 腾讯文档 — AI 写作',
+        url: 'https://docs.qq.com',
+        description: '腾讯文档内置 AI 能力，支持智能写作和数据分析',
+        difficulty: 'beginner',
+        roles: 'all',
       },
     ],
   },
@@ -525,19 +496,19 @@ export const RESOURCE_LINKS: ResourceLink[] = [
     unitId: 'u020',
     resources: [
       {
-        type: 'x',
-        title: 'Sam Altman - OpenAI CEO',
-        url: 'https://x.com/sama',
-        description: 'OpenAI CEO 的推特，分享 AI 前沿思考和创新观点',
-        difficulty: 'beginner',
+        type: 'bilibili',
+        title: '📺 B站热门：AI Agent 最新进展',
+        url: 'https://search.bilibili.com/all?keyword=AI+Agent%E6%9C%80%E6%96%B0&order=click',
+        description: '了解 AI Agent 的最新发展和创新应用',
+        difficulty: 'intermediate',
         roles: 'all',
       },
       {
-        type: 'github',
-        title: 'Awesome AI Agents - AI Agent 全景图',
-        url: 'https://github.com/e2b-dev/awesome-ai-agents',
-        description: '最全的 AI Agent 列表，涵盖所有主流 Agent 框架和应用',
-        difficulty: 'intermediate',
+        type: 'x',
+        title: '𝕏 Sam Altman — OpenAI CEO',
+        url: 'https://x.com/sama',
+        description: 'OpenAI CEO 的推特，分享 AI 前沿思考',
+        difficulty: 'beginner',
         roles: 'all',
       },
     ],
@@ -546,75 +517,47 @@ export const RESOURCE_LINKS: ResourceLink[] = [
   {
     unitId: 'u021',
     resources: [
+      // 非技术岗位
       {
-        type: 'huggingface',
-        title: 'HuggingFace Agents 免费课程',
-        url: 'https://huggingface.co/learn/agents-course',
-        description: '免费的 AI Agent 系统课程，从基础到实战，含代码练习',
-        difficulty: 'intermediate',
-        roles: ['dev', 'design'],
-      },
-      {
-        type: 'github',
-        title: 'AutoGPT - 自主 AI Agent 框架',
-        url: 'https://github.com/Significant-Gravitas/AutoGPT',
-        description: '最流行的 AI Agent 框架，支持自主规划和执行任务',
-        difficulty: 'advanced',
-        roles: ['dev'],
-      },
-      {
-        type: 'github',
-        title: 'LangChain - AI 应用开发框架',
-        url: 'https://github.com/langchain-ai/langchain',
-        description: '最流行的 LLM 应用开发框架，支持 Agent、RAG、Tool Use',
-        difficulty: 'advanced',
-        roles: ['dev'],
-      },
-      {
-        type: 'github',
-        title: 'Claude Agent SDK 示例',
-        url: 'https://github.com/anthropics/anthropic-cookbook/tree/main/claude_agent_sdk',
-        description: '用 Claude Agent SDK 构建自定义 Agent 的代码示例',
-        difficulty: 'advanced',
-        roles: ['dev'],
-      },
-      {
-        type: 'docs',
-        title: '腾讯混元 Agent 能力文档',
-        url: 'https://cloud.tencent.com/document/product/1729',
-        description: '腾讯混元大模型的 Agent 和 Tool Use 能力',
-        difficulty: 'intermediate',
-        roles: ['dev'],
+        type: 'bilibili',
+        title: '📺 B站热门：什么是 AI Agent？通俗讲解',
+        url: 'https://search.bilibili.com/all?keyword=%E4%BB%80%E4%B9%88%E6%98%AFAI+Agent&order=click',
+        description: '通俗易懂的 Agent 入门讲解，适合所有岗位',
+        difficulty: 'beginner',
+        roles: ['art', 'design', 'ops'],
       },
       {
         type: 'bilibili',
-        title: '【AI Agent入门】什么是 AI Agent？',
-        url: 'https://www.bilibili.com/video/BV1wT4y1s7XN',
-        description: '通俗易懂的 Agent 入门讲解，适合所有岗位',
+        title: '📺 B站热门：用 Coze/Dify 搭建 AI Agent',
+        url: 'https://search.bilibili.com/all?keyword=Coze+Dify+AI+Agent&order=click',
+        description: '零代码搭建 AI Agent，非技术人员也能上手！',
         difficulty: 'beginner',
-        roles: ['design', 'ops', 'art'],
+        roles: ['art', 'design', 'ops'],
       },
-    ],
-  },
-  // ==================== u022: 团队 AI 工作流优化 ====================
-  {
-    unitId: 'u022',
-    resources: [
+      // 技术岗位
+      {
+        type: 'huggingface',
+        title: '🤗 HuggingFace Agents 免费课程',
+        url: 'https://huggingface.co/learn/agents-course',
+        description: '免费的 AI Agent 系统课程，含代码练习',
+        difficulty: 'intermediate',
+        roles: ['dev'],
+      },
       {
         type: 'github',
-        title: 'Anthropic Patterns - Agent 设计模式',
-        url: 'https://github.com/anthropics/anthropic-cookbook/tree/main/patterns/agents',
-        description: 'Agent 设计模式食谱，包含多种 Agent 架构实现',
+        title: '🐙 LangChain — AI 应用开发框架',
+        url: 'https://github.com/langchain-ai/langchain',
+        description: '最流行的 LLM 应用开发框架',
         difficulty: 'advanced',
         roles: ['dev'],
       },
       {
-        type: 'docs',
-        title: '腾讯文档 AI 功能',
-        url: 'https://docs.qq.com',
-        description: '腾讯文档内置 AI 能力，支持智能写作和数据分析',
-        difficulty: 'beginner',
-        roles: 'all',
+        type: 'github',
+        title: '🐙 Claude Agent SDK 示例',
+        url: 'https://github.com/anthropics/anthropic-cookbook/tree/main/claude_agent_sdk',
+        description: '用 Claude Agent SDK 构建 Agent 的代码示例',
+        difficulty: 'advanced',
+        roles: ['dev'],
       },
     ],
   },
@@ -623,48 +566,34 @@ export const RESOURCE_LINKS: ResourceLink[] = [
     unitId: 'u023',
     resources: [
       {
-        type: 'github',
-        title: 'Claude Agent SDK - 构建生产级 Agent',
-        url: 'https://github.com/anthropics/claude-agent-sdk',
-        description: 'Anthropic 官方 Agent SDK，用于构建生产级 AI Agent',
-        difficulty: 'advanced',
-        roles: ['dev'],
+        type: 'bilibili',
+        title: '📺 B站热门：用 Coze 搭建 AI 应用',
+        url: 'https://search.bilibili.com/all?keyword=Coze%E6%90%AD%E5%BB%BAAI%E5%BA%94%E7%94%A8&order=click',
+        description: '零代码搭建 AI 应用，适合所有岗位的终期项目',
+        difficulty: 'beginner',
+        roles: ['art', 'design', 'ops'],
       },
       {
         type: 'huggingface',
-        title: 'HuggingFace Spaces - 在线 AI 应用',
+        title: '🤗 HuggingFace Spaces — 部署你的 AI 应用',
         url: 'https://huggingface.co/spaces',
         description: '在 HuggingFace 上部署和分享你的 AI 应用',
         difficulty: 'intermediate',
-        roles: ['dev', 'design'],
+        roles: ['dev'],
       },
       {
         type: 'tencent',
-        title: '腾讯云 AI 应用部署',
+        title: '🐧 腾讯云 AI 产品全家桶',
         url: 'https://cloud.tencent.com/product/ai',
-        description: '腾讯云 AI 产品全家桶，含混元大模型、图像识别、语音等',
+        description: '腾讯云 AI 产品，含混元大模型、图像识别、语音等',
         difficulty: 'intermediate',
         roles: ['dev'],
-      },
-    ],
-  },
-  // ==================== u024: AI 实践指南编写 ====================
-  {
-    unitId: 'u024',
-    resources: [
-      {
-        type: 'docs',
-        title: 'Notion AI — 智能文档写作',
-        url: 'https://www.notion.so/product/ai',
-        description: '用 Notion AI 辅助撰写实践指南和知识文档',
-        difficulty: 'beginner',
-        roles: 'all',
       },
     ],
   },
 ];
 
-// 获取某个学习单元的资源
+// 获取某个学习单元的资源（按角色过滤）
 export function getResourcesByUnit(unitId: string, role?: Role): ResourceLink['resources'] {
   const link = RESOURCE_LINKS.find(r => r.unitId === unitId);
   if (!link) return [];
@@ -679,9 +608,9 @@ export function getResourceIcon(type: string): string {
     case 'bilibili': return '📺';
     case 'huggingface': return '🤗';
     case 'x': return '𝕏';
-    case 'article': return '📄';
     case 'docs': return '📚';
     case 'tencent': return '🐧';
+    case 'product': return '🌐';
     default: return '🔗';
   }
 }
@@ -693,9 +622,9 @@ export function getResourceColor(type: string): string {
     case 'bilibili': return '#00a1d6';
     case 'huggingface': return '#ff9d00';
     case 'x': return '#1da1f2';
-    case 'article': return '#10b981';
     case 'docs': return '#8b5cf6';
     case 'tencent': return '#12b7f5';
+    case 'product': return '#10b981';
     default: return '#6b7280';
   }
 }
