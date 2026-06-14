@@ -4,11 +4,13 @@ import { PHASES, ROLES, getLearningPath } from '../data/learningPaths';
 import PathTimeline from '../components/PathTimeline';
 import ToolRecom from '../components/ToolRecom';
 import InnovationPath from '../components/InnovationPath';
+import PenguinGame from '../components/PenguinGame';
 import { Phase } from '../types';
 
 export default function Home() {
   const { role, progress } = useApp();
   const [activePhase, setActivePhase] = useState<Phase | undefined>(undefined);
+  const [gamePhase, setGamePhase] = useState<Phase | null>(null);
   const roleInfo = ROLES[role];
 
   const totalUnits = getLearningPath(role).length;
@@ -85,12 +87,24 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Stats */}
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+          {/* Stats + Game Button */}
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
             <StatPill label="总学习单元" value={`${totalUnits}`} />
             <StatPill label="已完成" value={`${completedCount}`} />
             <StatPill label="总学习时长" value={`${getLearningPath(role).reduce((s, u) => s + u.duration, 0)} 分钟`} />
             <StatPill label="当前阶段" value={progress.currentPhase === 'day30' ? '新手村' : progress.currentPhase === 'day60' ? '副本挑战' : 'Boss战'} />
+            <button
+              onClick={() => setGamePhase(progress.currentPhase)}
+              style={{
+                padding: '10px 20px', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.4)',
+                background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                color: 'white', cursor: 'pointer', fontSize: '14px', fontWeight: 700,
+                display: 'flex', alignItems: 'center', gap: '6px',
+                animation: 'pulse 2s infinite',
+              }}
+            >
+              🎮 开始冒险
+            </button>
           </div>
         </div>
       </div>
@@ -142,6 +156,19 @@ export default function Home() {
 
       {/* Learning Path Timeline */}
       <PathTimeline role={role} activePhase={activePhase} />
+
+      {/* Penguin Game */}
+      {gamePhase && (
+        <PenguinGame phase={gamePhase} onClose={() => setGamePhase(null)} />
+      )}
+
+      {/* Pulse animation */}
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+          50% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+        }
+      `}</style>
     </div>
   );
 }
