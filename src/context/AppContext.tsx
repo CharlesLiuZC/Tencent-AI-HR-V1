@@ -1,5 +1,21 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Role, Phase, UserProgress } from '../types';
+import { AvatarConfig } from '../components/AvatarDressUp';
+
+export interface UserProfile {
+  name: string;
+  department: string;
+  role: Role;
+  aiLevel: number; // 1-5
+  aiLevelLabel: string;
+  strengths: string[];
+  weaknesses: string[];
+  learningFocus: string[];
+  recommendedPace: string;
+  roleSpecific: string;
+  tencentTools: string[];
+  isOnboarded: boolean; // 是否已完成入职诊断
+}
 
 interface AppState {
   role: Role;
@@ -8,6 +24,10 @@ interface AppState {
   toggleUnit: (unitId: string) => void;
   setAssessmentScore: (phase: Phase, score: number) => void;
   resetProgress: () => void;
+  userProfile: UserProfile | null;
+  setUserProfile: (profile: UserProfile) => void;
+  avatarConfig: AvatarConfig;
+  setAvatarConfig: (config: AvatarConfig) => void;
 }
 
 const DEFAULT_PROGRESS: UserProgress = {
@@ -16,6 +36,13 @@ const DEFAULT_PROGRESS: UserProgress = {
   assessmentScores: { day30: null, day60: null, day90: null },
   startDate: new Date().toISOString(),
   lastActiveDate: new Date().toISOString(),
+};
+
+const DEFAULT_AVATAR: AvatarConfig = {
+  body: 'blue',
+  hat: 'none',
+  accessory: 'none',
+  weapon: 'none',
 };
 
 const AppContext = createContext<AppState | undefined>(undefined);
@@ -31,13 +58,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return saved ? JSON.parse(saved) : DEFAULT_PROGRESS;
   });
 
-  useEffect(() => {
-    localStorage.setItem('gd-role', role);
-  }, [role]);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
+    const saved = localStorage.getItem('gd-profile');
+    return saved ? JSON.parse(saved) : null;
+  });
 
-  useEffect(() => {
-    localStorage.setItem('gd-progress', JSON.stringify(progress));
-  }, [progress]);
+  const [avatarConfig, setAvatarConfig] = useState<AvatarConfig>(() => {
+    const saved = localStorage.getItem('gd-avatar');
+    return saved ? JSON.parse(saved) : DEFAULT_AVATAR;
+  });
+
+  useEffect(() => { localStorage.setItem('gd-role', role); }, [role]);
+  useEffect(() => { localStorage.setItem('gd-progress', JSON.stringify(progress)); }, [progress]);
+  useEffect(() => { if (userProfile) localStorage.setItem('gd-profile', JSON.stringify(userProfile)); }, [userProfile]);
+  useEffect(() => { localStorage.setItem('gd-avatar', JSON.stringify(avatarConfig)); }, [avatarConfig]);
 
   const toggleUnit = (unitId: string) => {
     setProgress(prev => {
@@ -45,20 +79,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ? prev.completedUnits.filter(id => id !== unitId)
         : [...prev.completedUnits, unitId];
 
-      // Auto-detect current phase
-      const has30 = completed.some(id => id.startsWith('u0') && parseInt(id.slice(1)) <= 10);
-      const has60 = completed.some(id => id.startsWith('u0') && parseInt(id.slice(1)) > 10 && parseInt(id.slice(1)) <= 19);
-      const has90 = completed.some(id => id.startsWith('u0') && parseInt(id.slice(1)) > 19);
       let currentPhase: Phase = 'day30';
+      const has90 = completed.some(id => id.startsWith('u0') && parseInt(id.slice(1)) > 19);
+      const has60 = completed.some(id => id.startsWith('u0') && parseInt(id.slice(1)) > 10 && parseInt(id.slice(1)) <= 19);
       if (has90) currentPhase = 'day90';
       else if (has60) currentPhase = 'day60';
 
-      return {
-        ...prev,
-        completedUnits: completed,
-        currentPhase,
-        lastActiveDate: new Date().toISOString(),
-      };
+      return { ...prev, completedUnits: completed, currentPhase, lastActiveDate: new Date().toISOString() };
     });
   };
 
@@ -75,7 +102,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AppContext.Provider value={{ role, setRole, progress, toggleUnit, setAssessmentScore, resetProgress }}>
+    <AppContext.Provider value={{
+      role, setRole, progress, toggleUnit, setAssessmentScore, resetProgress,
+      userProfile, setUserProfile, avatarConfig, setAvatarConfig,
+    }}>
       {children}
     </AppContext.Provider>
   );
