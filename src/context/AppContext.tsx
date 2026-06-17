@@ -39,10 +39,13 @@ const DEFAULT_PROGRESS: UserProgress = {
 };
 
 const DEFAULT_AVATAR: AvatarConfig = {
-  body: 'blue',
-  hat: 'none',
-  accessory: 'none',
+  bodyColor: 'classic',
+  hairstyle: 'none',
+  outfit: 'none',
+  glasses: 'none',
+  neckwear: 'scarf',
   weapon: 'none',
+  background: 'default',
 };
 
 const AppContext = createContext<AppState | undefined>(undefined);

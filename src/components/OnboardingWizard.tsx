@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { getMentorResponse, parseDiagnosisResult } from '../services/deepseek';
-import AvatarDressUp, { AvatarConfig } from './AvatarDressUp';
+import AvatarDressUp, { AvatarConfig, DEFAULT_AVATAR } from './AvatarDressUp';
 import { Role } from '../types';
 
 interface Props {
@@ -30,7 +30,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: Props) {
   const [chatMessages, setChatMessages] = useState<{ role: string; content: string }[]>([]);
   const [userInput, setUserInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [avatarConfigState, setAvatarConfigState] = useState<AvatarConfig>({ body: 'blue', hat: 'none', accessory: 'none', weapon: 'none' });
+  const [avatarConfigState, setAvatarConfigState] = useState<AvatarConfig>(DEFAULT_AVATAR);
   const [showAvatarEditor, setShowAvatarEditor] = useState(false);
   const [diagnosedProfile, setDiagnosedProfile] = useState<any>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
