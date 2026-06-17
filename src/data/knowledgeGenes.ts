@@ -419,6 +419,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
   },
 ];
 
+
 // 根据上下文获取匹配的知识基因
 export function getMatchingGenes(context: {
   unitId?: string;
