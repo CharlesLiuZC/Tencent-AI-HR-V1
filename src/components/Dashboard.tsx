@@ -1,10 +1,21 @@
+import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { LEARNING_UNITS, PHASES } from '../data/learningPaths';
 import ProgressRing from './ProgressRing';
+import GraduationPhoto from './GraduationPhoto';
 import { Phase } from '../types';
 
 export default function Dashboard() {
-  const { role, progress } = useApp();
+  const { role, progress, userProfile, avatarConfig } = useApp();
+  const [showGraduation, setShowGraduation] = useState(false);
+
+  const allUnitsCount = LEARNING_UNITS.filter(u =>
+    u.roles.length === 0 || u.roles.includes(role)
+  ).length;
+  const completedCount = progress.completedUnits.filter(id =>
+    LEARNING_UNITS.some(u => u.id === id && (u.roles.length === 0 || u.roles.includes(role)))
+  ).length;
+  const isFullyComplete = completedCount >= allUnitsCount && allUnitsCount > 0;
 
   const phases: Phase[] = ['day30', 'day60', 'day90'];
 
@@ -56,6 +67,35 @@ export default function Dashboard() {
       <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#1f2937', marginBottom: '24px' }}>
         📊 学习进度仪表盘
       </h1>
+
+      {/* Graduation Celebration */}
+      {isFullyComplete && (
+        <div style={{
+          background: 'linear-gradient(135deg, #fef3c7, #fde68a, #f59e0b)',
+          borderRadius: '20px', padding: '24px', marginBottom: '24px',
+          textAlign: 'center', border: '3px solid #f59e0b',
+          animation: 'glowBorder 2s ease-in-out infinite',
+        }}>
+          <span style={{ fontSize: '48px' }}>🏆</span>
+          <h2 style={{ margin: '8px 0', fontSize: '20px', fontWeight: 700, color: '#92400e' }}>
+            恭喜通关！全部 {allUnitsCount} 个学习单元已完成！
+          </h2>
+          <p style={{ margin: '0 0 16px', fontSize: '14px', color: '#78350f' }}>
+            你已从 AI 新手蜕变为 AI 先锋。快来看看你的毕业纪念照吧！
+          </p>
+          <button
+            onClick={() => setShowGraduation(true)}
+            style={{
+              padding: '14px 32px', borderRadius: '14px', border: 'none',
+              background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+              color: 'white', cursor: 'pointer', fontSize: '16px', fontWeight: 700,
+              boxShadow: '0 4px 15px rgba(245,158,11,0.4)',
+            }}
+          >
+            📸 生成毕业纪念合照
+          </button>
+        </div>
+      )}
 
       {/* Overall Progress */}
       <div style={{
@@ -196,6 +236,24 @@ export default function Dashboard() {
           })}
         </div>
       </div>
+
+      <GraduationPhoto
+        isOpen={showGraduation}
+        onClose={() => setShowGraduation(false)}
+        userInfo={{
+          name: userProfile?.name || "冒险者",
+          department: userProfile?.department || "腾讯",
+          role: "程序",
+        }}
+        avatarConfig={avatarConfig}
+        stats={{
+          completedUnits: completedCount,
+          tencentken: completedCount * 10,
+          xp: completedCount * 100,
+          level: Math.min(7, Math.floor(completedCount / 4) + 1),
+          assessmentScores: progress.assessmentScores,
+        }}
+      />
     </div>
   );
 }
