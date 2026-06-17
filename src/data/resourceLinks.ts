@@ -22,9 +22,9 @@ export const RESOURCE_LINKS: ResourceLink[] = [
       // 非技术岗位：视频 + 产品体验
       {
         type: 'bilibili',
-        title: '📺 B站热门：AI 入门科普合集',
-        url: 'https://search.bilibili.com/all?keyword=AI%E5%85%A5%E9%97%A8%E7%A7%91%E6%99%AE&order=click',
-        description: 'B站播放量最高的 AI 入门科普视频，选一个你喜欢的风格看',
+        title: '📺 吴恩达AI Agent教程 — 理解Agent思维（21.7万播放）',
+        url: 'https://www.bilibili.com/video/BV1aaxyz8ELY',
+        description: '吴恩达最新AI Agent课程，通俗易懂地介绍什么是AI Agent',
         difficulty: 'beginner',
         roles: ['art', 'design', 'ops'],
       },
