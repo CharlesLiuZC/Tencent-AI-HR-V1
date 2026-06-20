@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { ROLES } from '../data/learningPaths';
+import { CAPABILITIES } from '../data/learningPaths';
 import { getLevel, getLevelProgress, getNextLevel } from '../data/gamification';
 import PenguinMentor from './PenguinMentor';
 import TencentkenShop from './TencentkenShop';
@@ -127,7 +127,7 @@ export default function Header() {
           {/* Role Selector */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ fontSize: '11px', opacity: 0.7 }}>角色：</span>
-            {Object.values(ROLES).map(r => (
+            {Object.values(CAPABILITIES).map(r => (
               <button
                 key={r.key}
                 onClick={() => setRole(r.key)}

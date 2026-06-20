@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { getMentorResponse, parseDiagnosisResult } from '../services/deepseek';
 import AvatarDressUp, { AvatarConfig, DEFAULT_AVATAR } from './AvatarDressUp';
-import { Role } from '../types';
+import { Capability } from '../types';
+import { CAPABILITIES } from '../data/learningPaths';
 
 interface Props {
   isOpen: boolean;
@@ -14,11 +15,13 @@ const DEPARTMENTS = [
   'PCG 平台与内容', 'TEG 技术工程', 'HR 人力资源', '其他',
 ];
 
-const ROLES_MAP: { key: Role; label: string; icon: string; desc: string }[] = [
-  { key: 'art', label: '美术', icon: '🎨', desc: '原画/3D建模/动画/UI' },
-  { key: 'design', label: '策划', icon: '📝', desc: '游戏策划/数值关卡' },
-  { key: 'dev', label: '程序', icon: '💻', desc: '开发/架构/前端后端' },
-  { key: 'ops', label: '运营', icon: '📊', desc: '运营/市场/社区/数据' },
+const CAPABILITY_OPTIONS: { key: Capability; label: string; icon: string; desc: string }[] = [
+  { key: 'ai-image', label: 'AI 生图', icon: '🎨', desc: 'SD/Midjourney/ControlNet/LoRA' },
+  { key: 'ai-video', label: 'AI 视频', icon: '🎬', desc: 'Seedance/Runway/Sora' },
+  { key: 'ai-code', label: 'AI 编程', icon: '💻', desc: 'Copilot/Cursor/Agent SDK' },
+  { key: 'ai-writing', label: 'AI 文案', icon: '✍️', desc: '策划/运营/内容创作' },
+  { key: 'ai-agent', label: 'AI Agent', icon: '🤖', desc: '构建自主执行智能体' },
+  { key: 'ai-research', label: 'AI 研究', icon: '🔬', desc: '前沿论文/模型训练/SFT' },
 ];
 
 export default function OnboardingWizard({ isOpen, onComplete }: Props) {
@@ -26,7 +29,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: Props) {
   const [step, setStep] = useState<'info' | 'avatar' | 'aiChat' | 'complete'>('info');
   const [name, setName] = useState('');
   const [department, setDepartment] = useState('');
-  const [selectedRole, setSelectedRole] = useState<Role>('dev');
+  const [selectedCapability, setSelectedCapability] = useState<Capability>('ai-image');
   const [chatMessages, setChatMessages] = useState<{ role: string; content: string }[]>([]);
   const [userInput, setUserInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -46,7 +49,8 @@ export default function OnboardingWizard({ isOpen, onComplete }: Props) {
 
   const startDiagnosis = async () => {
     setIsTyping(true);
-    const firstMsg = `嗨 ${name}！我是你的 AI 导师 QQ鹅仔 🐧\n\n我看到你选择的是 ${selectedRole === 'art' ? '美术' : selectedRole === 'design' ? '策划' : selectedRole === 'dev' ? '程序' : '运营'} 岗位，${department} 部门。\n\n先跟我聊聊你的 AI 使用经验吧 — 你之前用过哪些 AI 工具？比如 ChatGPT、Midjourney、GitHub Copilot 或者腾讯元宝？平时用的频率怎么样？`;
+    const capLabel = CAPABILITIES[selectedCapability]?.title || 'AI生图';
+    const firstMsg = `嗨 ${name}！我是你的 AI 导师 QQ鹅仔 🐧\n\n我看到你选择的是「${capLabel}」方向，${department} 部门。\n\n先跟我聊聊你的 AI 使用经验吧 — 你之前用过哪些 AI 工具？比如 ChatGPT、Midjourney、GitHub Copilot 或者腾讯元宝？平时用的频率怎么样？`;
     setChatMessages([{ role: 'assistant', content: firstMsg }]);
     setIsTyping(false);
   };
@@ -80,14 +84,10 @@ export default function OnboardingWizard({ isOpen, onComplete }: Props) {
         aiLevelLabel: '初级使用者',
         strengths: ['学习意愿强', '有岗位专业知识'],
         weaknesses: ['AI工具使用经验不足', '需建立AI思维'],
-        learningFocus: selectedRole === 'art' ? ['AI+视觉设计', 'AI图像生成工具'] :
-                     selectedRole === 'design' ? ['AI+内容策划', 'AI辅助创意'] :
-                     selectedRole === 'ops' ? ['AI+数据运营', 'AI内容生成'] : ['AI编程', 'AI架构设计'],
+        learningFocus: CAPABILITIES[selectedCapability]?.tencentTools || ['AI基础'],
         recommendedPace: '标准进度',
-        roleSpecific: selectedRole === 'art' ? '重点掌握Midjourney/SD进行概念设计' :
-                      selectedRole === 'design' ? '重点用AI辅助策划案和竞品分析' :
-                      selectedRole === 'ops' ? '重点用AI做数据分析和内容运营' : '重点用CodeBuddy提升编程效率',
-        tencentTools: ['腾讯元宝', '混元大模型', ...(selectedRole === 'dev' ? ['CodeBuddy', 'WorkBuddy'] : [])],
+        roleSpecific: `重点学习${CAPABILITIES[selectedCapability]?.title || 'AI'}方向`,
+        tencentTools: CAPABILITIES[selectedCapability]?.tencentTools || ['腾讯元宝'],
       };
       setDiagnosedProfile(fallback);
       setChatMessages(prev => [...prev, { role: 'assistant', content: '好的，我已经了解了你的情况！（使用离线评估模式）' }]);
@@ -97,12 +97,12 @@ export default function OnboardingWizard({ isOpen, onComplete }: Props) {
   };
 
   const finishOnboarding = (diagnosis: any) => {
-    setRole(selectedRole);
+    setRole(selectedCapability);
     setAvatarConfig(avatarConfigState);
     setUserProfile({
       name,
       department,
-      role: selectedRole,
+      role: selectedCapability,
       aiLevel: diagnosis.aiLevel || 2,
       aiLevelLabel: diagnosis.aiLevelLabel || '初级使用者',
       strengths: diagnosis.strengths || [],
@@ -195,14 +195,14 @@ export default function OnboardingWizard({ isOpen, onComplete }: Props) {
               <div>
                 <label style={{ fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '8px', display: 'block' }}>所属岗位</label>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
-                  {ROLES_MAP.map(r => (
+                  {CAPABILITY_OPTIONS.map(r => (
                     <button
                       key={r.key}
-                      onClick={() => setSelectedRole(r.key)}
+                      onClick={() => setSelectedCapability(r.key)}
                       style={{
                         padding: '14px', borderRadius: '12px',
-                        border: selectedRole === r.key ? '2.5px solid #12b7f5' : '2px solid #e5e7eb',
-                        background: selectedRole === r.key ? '#f0f9ff' : 'white',
+                        border: selectedCapability === r.key ? '2.5px solid #12b7f5' : '2px solid #e5e7eb',
+                        background: selectedCapability === r.key ? '#f0f9ff' : 'white',
                         cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s',
                       }}
                     >

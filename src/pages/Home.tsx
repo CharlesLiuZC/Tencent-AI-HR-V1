@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { PHASES, ROLES, getLearningPath } from '../data/learningPaths';
+import { PHASES, CAPABILITIES, getLearningPath } from '../data/learningPaths';
 import PathTimeline from '../components/PathTimeline';
 import ToolRecom from '../components/ToolRecom';
 import InnovationPath from '../components/InnovationPath';
@@ -11,7 +11,7 @@ export default function Home() {
   const { role, progress } = useApp();
   const [activePhase, setActivePhase] = useState<Phase | undefined>(undefined);
   const [gamePhase, setGamePhase] = useState<Phase | null>(null);
-  const roleInfo = ROLES[role];
+  const roleInfo = CAPABILITIES[role] || CAPABILITIES['ai-image'];
 
   const totalUnits = getLearningPath(role).length;
   const completedCount = getLearningPath(role).filter(u => progress.completedUnits.includes(u.id)).length;
