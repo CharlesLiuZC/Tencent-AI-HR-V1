@@ -27,8 +27,8 @@ function drawGraduationPhoto(ctx: CanvasRenderingContext2D, w: number, h: number
   ctx.fillText('CONGRATULATIONS! 成长副本毕业纪念', w/2, h*0.045);
 
   const ax = w/2, ay = h*0.42, as = w*0.35;
-  const bodyColors: Record<string, string> = { black: '#1a1a2e', blue: '#12b7f5', purple: '#8b5cf6', pink: '#ec4899', green: '#22c55e', orange: '#f97316' };
-  const bc = bodyColors[cfg.body] || '#1a1a2e';
+  const bodyColors: Record<string, string> = { classic: '#1a1a2e', blue: '#12b7f5', purple: '#8b5cf6', pink: '#ec4899', green: '#22c55e', orange: '#f97316', gold: '#f59e0b' };
+  const bc = bodyColors[cfg.bodyColor] || '#1a1a2e';
 
   ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.beginPath(); ctx.ellipse(ax, ay+as*0.45, as*0.3, as*0.07, 0, 0, Math.PI*2); ctx.fill();
   ctx.fillStyle = bc; ctx.beginPath(); ctx.ellipse(ax, ay, as*0.3, as*0.36, 0, 0, Math.PI*2); ctx.fill();
@@ -42,10 +42,10 @@ function drawGraduationPhoto(ctx: CanvasRenderingContext2D, w: number, h: number
   ctx.fillStyle = '#f59e0b'; ctx.fillRect(ax+as*0.11, ay-as*0.3, as*0.015, as*0.1);
   ctx.beginPath(); ctx.arc(ax+as*0.117, ay-as*0.2, as*0.025, 0, Math.PI*2); ctx.fill();
 
-  if (cfg.accessory && cfg.accessory !== 'none') {
-    const accMap: Record<string,string> = { scarf:'🧣', tie:'👔', glasses:'🕶️', necklace:'💎', bowtie:'🎀' };
-    ctx.font = `${as*0.2}px serif`; ctx.textAlign = 'center';
-    ctx.fillText(accMap[cfg.accessory]||'', ax, ay-as*0.05);
+  if (cfg.neckwear && cfg.neckwear !== 'none') {
+    const accMap: Record<string,string> = { scarf:'🧣', tie:'👔', bowtie:'🎀', necklace:'💎', collar:'⛓️' };
+    ctx.font = `${as*0.18}px serif`; ctx.textAlign = 'center';
+    ctx.fillText(accMap[cfg.neckwear]||'', ax, ay+as*0.14);
   }
   if (cfg.weapon && cfg.weapon !== 'none') {
     const wepMap: Record<string,string> = { sword:'⚔️', shield:'🛡️', wand:'🪄', book:'📖', keyboard:'⌨️' };
