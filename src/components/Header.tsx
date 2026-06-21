@@ -7,7 +7,7 @@ import PenguinMentor from './PenguinMentor';
 import TencentkenShop from './TencentkenShop';
 
 export default function Header() {
-  const { role, setCapability, progress } = useApp();
+  const { role, setRole, progress } = useApp();
   const location = useLocation();
   const [showMentor, setShowMentor] = useState(false);
   const [showShop, setShowShop] = useState(false);
@@ -130,7 +130,7 @@ export default function Header() {
             {Object.values(CAPABILITIES).map(r => (
               <button
                 key={r.key}
-                onClick={() => setCapability(r.key)}
+                onClick={() => setRole(r.key)}
                 style={{
                   background: role === r.key ? 'rgba(255,255,255,0.25)' : 'transparent',
                   color: 'white',

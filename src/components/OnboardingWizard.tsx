@@ -25,7 +25,7 @@ const CAPABILITY_OPTIONS: { key: Capability; label: string; icon: string; desc: 
 ];
 
 export default function OnboardingWizard({ isOpen, onComplete }: Props) {
-  const { setCapability, setUserProfile, setAvatarConfig } = useApp();
+  const { setRole, setUserProfile, setAvatarConfig } = useApp();
   const [step, setStep] = useState<'info' | 'avatar' | 'aiChat' | 'complete'>('info');
   const [name, setName] = useState('');
   const [department, setDepartment] = useState('');
@@ -97,7 +97,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: Props) {
   };
 
   const finishOnboarding = (diagnosis: any) => {
-    setCapability(selectedCapability);
+    setRole(selectedCapability);
     setAvatarConfig(avatarConfigState);
     setUserProfile({
       name,
