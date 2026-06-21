@@ -10,10 +10,10 @@ export default function Dashboard() {
   const [showGraduation, setShowGraduation] = useState(false);
 
   const allUnitsCount = LEARNING_UNITS.filter(u =>
-    u.roles.length === 0 || u.roles.includes(role)
+    u.capabilities.length === 0 || u.capabilities.includes(role)
   ).length;
   const completedCount = progress.completedUnits.filter(id =>
-    LEARNING_UNITS.some(u => u.id === id && (u.roles.length === 0 || u.roles.includes(role)))
+    LEARNING_UNITS.some(u => u.id === id && (u.capabilities.length === 0 || u.capabilities.includes(role)))
   ).length;
   const isFullyComplete = completedCount >= allUnitsCount && allUnitsCount > 0;
 
@@ -21,7 +21,7 @@ export default function Dashboard() {
 
   const phaseStats = phases.map(phase => {
     const phaseUnits = LEARNING_UNITS.filter(u =>
-      u.phase === phase && (u.roles.length === 0 || u.roles.includes(role))
+      u.phase === phase && (u.capabilities.length === 0 || u.capabilities.includes(role))
     );
     const completed = phaseUnits.filter(u => progress.completedUnits.includes(u.id));
     return {
