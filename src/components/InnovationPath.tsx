@@ -11,7 +11,7 @@ export default function InnovationPath() {
   // 计算每个阶段的完成情况
   const phaseData = phases.map(phase => {
     const units = LEARNING_UNITS.filter(u =>
-      u.phase === phase && (u.roles.length === 0 || u.roles.includes(role))
+      u.phase === phase && (u.capabilities.length === 0 || u.capabilities.includes(role))
     );
     const completed = units.filter(u => progress.completedUnits.includes(u.id));
     const completionRate = units.length > 0 ? completed.length / units.length : 0;
