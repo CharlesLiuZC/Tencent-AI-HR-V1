@@ -1,9 +1,9 @@
-import { Phase, Role } from '../types';
-import { getToolsByPhaseAndRole } from '../data/aiTools';
+import { Phase, Capability } from '../types';
+import { getToolsByPhaseAndCapability } from '../data/aiTools';
 
 interface Props {
   phase: Phase;
-  role: Role;
+  role: Capability;
 }
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -23,7 +23,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 export default function ToolRecom({ phase, role }: Props) {
-  const tools = getToolsByPhaseAndRole(phase, role);
+  const tools = getToolsByPhaseAndCapability(phase, role);
 
   if (tools.length === 0) {
     return (

@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Role, Phase, UserProgress } from '../types';
+import { Capability, Phase, UserProgress } from '../types';
 import { AvatarConfig } from '../components/AvatarDressUp';
 
 export interface UserProfile {
   name: string;
   department: string;
-  role: Role;
-  aiLevel: number; // 1-5
+  role: Capability;
+  aiLevel: number;
   aiLevelLabel: string;
   strengths: string[];
   weaknesses: string[];
@@ -14,12 +14,12 @@ export interface UserProfile {
   recommendedPace: string;
   roleSpecific: string;
   tencentTools: string[];
-  isOnboarded: boolean; // 是否已完成入职诊断
+  isOnboarded: boolean;
 }
 
 interface AppState {
-  role: Role;
-  setRole: (role: Role) => void;
+  role: Capability;
+  setRole: (role: Capability) => void;
   progress: UserProgress;
   toggleUnit: (unitId: string) => void;
   setAssessmentScore: (phase: Phase, score: number) => void;
@@ -36,6 +36,7 @@ const DEFAULT_PROGRESS: UserProgress = {
   assessmentScores: { day30: null, day60: null, day90: null },
   startDate: new Date().toISOString(),
   lastActiveDate: new Date().toISOString(),
+  selectedCapability: null,
 };
 
 const DEFAULT_AVATAR: AvatarConfig = {
@@ -51,9 +52,9 @@ const DEFAULT_AVATAR: AvatarConfig = {
 const AppContext = createContext<AppState | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<Role>(() => {
+  const [role, setRole] = useState<Capability>(() => {
     const saved = localStorage.getItem('gd-role');
-    return (saved as Role) || 'dev';
+    return (saved as Capability) || 'ai-image';
   });
 
   const [progress, setProgress] = useState<UserProgress>(() => {
@@ -83,8 +84,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         : [...prev.completedUnits, unitId];
 
       let currentPhase: Phase = 'day30';
-      const has90 = completed.some(id => id.startsWith('u0') && parseInt(id.slice(1)) > 19);
-      const has60 = completed.some(id => id.startsWith('u0') && parseInt(id.slice(1)) > 10 && parseInt(id.slice(1)) <= 19);
+      const has90 = completed.some(id => id.includes('90'));
+      const has60 = completed.some(id => id.includes('60'));
       if (has90) currentPhase = 'day90';
       else if (has60) currentPhase = 'day60';
 

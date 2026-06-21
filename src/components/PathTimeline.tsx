@@ -1,9 +1,9 @@
-import { LearningUnit, Phase, Role } from '../types';
+import { LearningUnit, Phase, Capability } from '../types';
 import { getLearningPath, PHASES } from '../data/learningPaths';
 import UnitCard from './UnitCard';
 
 interface Props {
-  role: Role;
+  role: Capability;
   activePhase?: Phase;
 }
 

@@ -16,7 +16,7 @@ const BATTLE_SCENARIOS: Record<Phase, { title: string; rounds: { aiSays: string;
       {
         aiSays: '我是AI评审官！第一题：如果我让你帮我写一份竞品分析报告，你的第一步是什么？直接让我写，还是先告诉我什么信息？',
         goodAnswer: '应该先提供背景信息（竞品名称、分析维度、目标受众），然后用结构化的 Prompt 指导 AI 输出',
-        tips: '好的 Prompt 需要 Context + Role + Instruction',
+        tips: '好的 Prompt 需要 Context + Capability + Instruction',
       },
       {
         aiSays: '不错！第二回合：我发现 AI 给我的数据分析结果里用的是英文，但老板要看中文。你会怎么处理？',

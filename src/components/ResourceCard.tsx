@@ -1,9 +1,9 @@
-import { Role } from '../types';
+import { Capability } from '../types';
 import { getResourcesByUnit, getResourceIcon, getResourceColor } from '../data/resourceLinks';
 
 interface Props {
   unitId: string;
-  role: Role;
+  role: Capability;
 }
 
 export default function ResourceCard({ unitId, role }: Props) {

@@ -11,6 +11,9 @@ export type Capability =
   | 'ai-agent'      // AI Agent：构建自主执行的智能体
   | 'ai-research';  // AI研究：前沿论文/模型训练/SFT
 
+// 兼容旧代码的别名
+export type Role = Capability;
+
 // 能力方向信息
 export interface CapabilityInfo {
   key: Capability;

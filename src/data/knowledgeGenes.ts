@@ -48,7 +48,7 @@ export interface KnowledgeGene {
     lastValidated: string;
   };
   applicable: {
-    roles: Role[] | 'all';
+    capabilities: Role[] | 'all';
     phases: Phase[];
     abilityLevel: 'beginner' | 'intermediate' | 'advanced' | 'all';
     taskCategories: string[];
@@ -77,7 +77,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 5, validatedBy: 12, lastValidated: '2026-06-10' },
     applicable: {
-      roles: ['design', 'ops'],
+      capabilities: ['ai-writing'],
       phases: ['day30', 'day60', 'day90'],
       abilityLevel: 'all',
       taskCategories: ['策划案撰写', '方案评审', '文案优化'],
@@ -97,7 +97,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 5, validatedBy: 25, lastValidated: '2026-06-12' },
     applicable: {
-      roles: 'all',
+      capabilities: 'all',
       phases: ['day30'],
       abilityLevel: 'beginner',
       taskCategories: ['所有 AI 交互'],
@@ -116,7 +116,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 4, validatedBy: 8, lastValidated: '2026-06-08' },
     applicable: {
-      roles: ['design', 'ops'],
+      capabilities: ['ai-writing'],
       phases: ['day60', 'day90'],
       abilityLevel: 'intermediate',
       taskCategories: ['文档审阅', '方案评审'],
@@ -135,7 +135,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 5, validatedBy: 15, lastValidated: '2026-06-11' },
     applicable: {
-      roles: ['dev'],
+      capabilities: ['ai-code'],
       phases: ['day60', 'day90'],
       abilityLevel: 'intermediate',
       taskCategories: ['代码审查', '代码重构'],
@@ -154,7 +154,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 4, validatedBy: 10, lastValidated: '2026-06-09' },
     applicable: {
-      roles: ['ops', 'design'],
+      capabilities: ['ops', 'design'],
       phases: ['day30', 'day60'],
       abilityLevel: 'all',
       taskCategories: ['数据分析', '运营决策'],
@@ -173,7 +173,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 5, validatedBy: 18, lastValidated: '2026-06-12' },
     applicable: {
-      roles: ['art', 'design'],
+      capabilities: ['ai-image', 'ai-writing'],
       phases: ['day30', 'day60'],
       abilityLevel: 'all',
       taskCategories: ['概念设计', '场景原画', '角色设计'],
@@ -194,7 +194,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 4, validatedBy: 20, lastValidated: '2026-06-10' },
     applicable: {
-      roles: 'all',
+      capabilities: 'all',
       phases: ['day30'],
       abilityLevel: 'beginner',
       taskCategories: ['数据分析', '报告生成'],
@@ -213,7 +213,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 5, validatedBy: 15, lastValidated: '2026-06-11' },
     applicable: {
-      roles: 'all',
+      capabilities: 'all',
       phases: ['day30', 'day60'],
       abilityLevel: 'beginner',
       taskCategories: ['文档处理', '方案评审'],
@@ -232,7 +232,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 5, validatedBy: 30, lastValidated: '2026-06-12' },
     applicable: {
-      roles: 'all',
+      capabilities: 'all',
       phases: ['day30', 'day60', 'day90'],
       abilityLevel: 'all',
       taskCategories: ['所有 AI 交互'],
@@ -251,7 +251,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 5, validatedBy: 35, lastValidated: '2026-06-12' },
     applicable: {
-      roles: 'all',
+      capabilities: 'all',
       phases: ['day30'],
       abilityLevel: 'all',
       taskCategories: ['数据处理'],
@@ -270,7 +270,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 4, validatedBy: 12, lastValidated: '2026-06-10' },
     applicable: {
-      roles: 'all',
+      capabilities: 'all',
       phases: ['day30', 'day60'],
       abilityLevel: 'beginner',
       taskCategories: ['所有 AI 交互'],
@@ -291,7 +291,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 5, validatedBy: 8, lastValidated: '2026-06-09' },
     applicable: {
-      roles: ['design', 'ops'],
+      capabilities: ['ai-writing'],
       phases: ['day60', 'day90'],
       abilityLevel: 'intermediate',
       taskCategories: ['竞品分析', '市场调研'],
@@ -310,7 +310,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 5, validatedBy: 10, lastValidated: '2026-06-11' },
     applicable: {
-      roles: ['dev'],
+      capabilities: ['ai-code'],
       phases: ['day60', 'day90'],
       abilityLevel: 'intermediate',
       taskCategories: ['代码重构', '技术债清理'],
@@ -329,7 +329,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 4, validatedBy: 6, lastValidated: '2026-06-08' },
     applicable: {
-      roles: 'all',
+      capabilities: 'all',
       phases: ['day60'],
       abilityLevel: 'all',
       taskCategories: ['团队协作', '会议管理'],
@@ -350,7 +350,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 5, validatedBy: 22, lastValidated: '2026-06-12' },
     applicable: {
-      roles: 'all',
+      capabilities: 'all',
       phases: ['day30', 'day60'],
       abilityLevel: 'all',
       taskCategories: ['所有 AI 交互'],
@@ -370,7 +370,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 5, validatedBy: 18, lastValidated: '2026-06-11' },
     applicable: {
-      roles: 'all',
+      capabilities: 'all',
       phases: ['day30', 'day60'],
       abilityLevel: 'all',
       taskCategories: ['所有 AI 交互'],
@@ -390,7 +390,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 5, validatedBy: 20, lastValidated: '2026-06-12' },
     applicable: {
-      roles: 'all',
+      capabilities: 'all',
       phases: ['day30'],
       abilityLevel: 'beginner',
       taskCategories: ['所有 AI 交互'],
@@ -410,7 +410,7 @@ export const KNOWLEDGE_GENES: KnowledgeGene[] = [
     },
     quality: { rating: 5, validatedBy: 14, lastValidated: '2026-06-10' },
     applicable: {
-      roles: 'all',
+      capabilities: 'all',
       phases: ['day60', 'day90'],
       abilityLevel: 'intermediate',
       taskCategories: ['AI 工作流设计', '工具选型'],

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LearningUnit, Role } from '../types';
+import { LearningUnit, Capability } from '../types';
 import { getMatchingGenes, groupGenesByType, GENE_TYPES, KnowledgeGene, GeneType } from '../data/knowledgeGenes';
 import { useApp } from '../context/AppContext';
 

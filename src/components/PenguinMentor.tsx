@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Role } from '../types';
+import { Capability } from '../types';
 import { useApp } from '../context/AppContext';
 
 interface Message {
@@ -97,7 +97,7 @@ export default function PenguinMentor({ isOpen, onClose }: Props) {
     }
   };
 
-  const generateRecommendation = (profile: Record<string, string>, role: Role): string => {
+  const generateRecommendation = (profile: Record<string, string>, role: Capability): string => {
     const roleLabel = role === 'art' ? '美术' : role === 'design' ? '策划' : role === 'dev' ? '程序' : '运营';
     const level = profile.start || 'beginner';
     const style = profile.style || 'hands_on';

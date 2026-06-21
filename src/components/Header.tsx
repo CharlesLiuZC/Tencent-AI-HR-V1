@@ -7,7 +7,7 @@ import PenguinMentor from './PenguinMentor';
 import TencentkenShop from './TencentkenShop';
 
 export default function Header() {
-  const { role, setRole, progress } = useApp();
+  const { role, setCapability, progress } = useApp();
   const location = useLocation();
   const [showMentor, setShowMentor] = useState(false);
   const [showShop, setShowShop] = useState(false);
@@ -67,7 +67,7 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Right side: Level + Tencentken + Role */}
+          {/* Right side: Level + Tencentken + Capability */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             {/* Level badge */}
             <div style={{
@@ -119,18 +119,18 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Role selector + Nav */}
+        {/* Capability selector + Nav */}
         <div style={{
           padding: '8px 24px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
-          {/* Role Selector */}
+          {/* Capability Selector */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ fontSize: '11px', opacity: 0.7 }}>角色：</span>
             {Object.values(CAPABILITIES).map(r => (
               <button
                 key={r.key}
-                onClick={() => setRole(r.key)}
+                onClick={() => setCapability(r.key)}
                 style={{
                   background: role === r.key ? 'rgba(255,255,255,0.25)' : 'transparent',
                   color: 'white',

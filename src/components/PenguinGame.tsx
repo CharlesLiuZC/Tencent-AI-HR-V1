@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useApp } from '../context/AppContext';
 import { PHASES, LEARNING_UNITS } from '../data/learningPaths';
-import { Phase, Role } from '../types';
+import { Phase, Capability } from '../types';
 
 // ==================== 游戏配置 ====================
 const TILE_SIZE = 48;
