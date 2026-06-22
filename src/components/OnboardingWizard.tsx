@@ -24,6 +24,70 @@ const CAPABILITY_OPTIONS: { key: Capability; label: string; icon: string; desc: 
   { key: 'ai-research', label: 'AI 研究', icon: '🔬', desc: '前沿论文/模型训练/SFT' },
 ];
 
+// 离线诊断：根据用户回答智能分析AI水平
+function generateOfflineDiagnosis(userMsg: string, capability: Capability) {
+  const msg = userMsg.toLowerCase();
+  let aiLevel = 2;
+  let aiLevelLabel = '初级使用者';
+  let strengths: string[] = ['学习意愿强'];
+  let weaknesses: string[] = ['AI工具使用经验待提升'];
+  let message = '';
+
+  // 关键词分析
+  const expertKeywords = ['agent', 'sft', 'lora', 'comfyui', 'cursor', 'claude code', '微调', 'rag', '工作流', 'pipeline'];
+  const intermediateKeywords = ['chatgpt', 'copilot', 'midjourney', 'prompt', '提示词', 'stable diffusion', '腾讯元宝'];
+  const beginnerKeywords = ['不知道', '没用过', '刚开始', '小白', '第一次', '不了解'];
+
+  const hasExpert = expertKeywords.some(kw => msg.includes(kw));
+  const hasIntermediate = intermediateKeywords.some(kw => msg.includes(kw));
+  const hasBeginner = beginnerKeywords.some(kw => msg.includes(kw));
+
+  if (hasExpert) {
+    aiLevel = 4;
+    aiLevelLabel = 'AI协作专家';
+    strengths = ['AI工具使用经验丰富', '理解AI底层原理'];
+    weaknesses = ['需要更多团队协作经验'];
+    message = `哇，看得出你在AI方面已经有很深的积累了！🎉 你提到的这些工具和概念都很专业。接下来我会为你推荐更具挑战性的内容，帮助你从"个人高手"进化为"团队AI赋能者"。`;
+  } else if (hasIntermediate) {
+    aiLevel = 3;
+    aiLevelLabel = '进阶使用者';
+    strengths = ['有AI工具使用经验', '学习主动性强'];
+    weaknesses = ['需要系统化学习路径', '高级功能待探索'];
+    message = `不错！你已经有一些AI使用经验了，这是很好的起点 🚀 我会帮你把这些零散的经验系统化，同时带你探索更多高级功能。`;
+  } else if (hasBeginner) {
+    aiLevel = 1;
+    aiLevelLabel = 'AI新手';
+    strengths = ['学习意愿强', '有岗位专业知识'];
+    weaknesses = ['AI工具使用经验不足', '需要建立AI思维'];
+    message = `没关系，每个人都是从零开始的！🌱 AI其实没有想象中那么难，我会一步步带你入门，从最简单的开始，保证你每天都有进步感。`;
+  } else {
+    aiLevel = 2;
+    aiLevelLabel = '初级使用者';
+    strengths = ['有好奇心', '愿意尝试新事物'];
+    weaknesses = ['需要更多实操练习'];
+    message = `收到！根据你的回答，我为你制定了专属学习计划 📋 我们会从基础开始，循序渐进，每天1-2小时，90天后你会有质的飞跃！`;
+  }
+
+  // 根据能力方向调整
+  const capInfo = CAPABILITIES[capability];
+  const capTitle = capInfo?.title || 'AI';
+  const capTools = capInfo?.tencentTools || ['腾讯元宝'];
+
+  return {
+    message,
+    profile: {
+      aiLevel,
+      aiLevelLabel,
+      strengths,
+      weaknesses,
+      learningFocus: [`${capTitle}方向核心技能`],
+      recommendedPace: aiLevel >= 3 ? '加速进度' : aiLevel <= 1 ? '慢速补强' : '标准进度',
+      roleSpecific: `重点学习${capTitle}方向，掌握${capTools.join('、')}等工具`,
+      tencentTools: capTools,
+    },
+  };
+}
+
 export default function OnboardingWizard({ isOpen, onComplete }: Props) {
   const { setRole, setUserProfile, setAvatarConfig } = useApp();
   const [step, setStep] = useState<'info' | 'avatar' | 'aiChat' | 'complete'>('info');
@@ -62,36 +126,43 @@ export default function OnboardingWizard({ isOpen, onComplete }: Props) {
     setChatMessages(prev => [...prev, { role: 'user', content: msg }]);
     setIsTyping(true);
 
+    // 构建对话历史
+    const msgs = chatMessages
+      .filter(m => m.role === 'user' || m.role === 'assistant')
+      .map(m => ({ role: m.role as 'user' | 'assistant', content: m.content }));
+    msgs.push({ role: 'user', content: msg });
+
+    // 尝试调用 DeepSeek API，失败则静默使用离线模式
+    let response = '';
+    let apiSuccess = false;
+
     try {
-      const msgs = chatMessages
-        .filter(m => m.role === 'user' || m.role === 'assistant')
-        .map(m => ({ role: m.role as 'user' | 'assistant', content: m.content }));
-      msgs.push({ role: 'user', content: msg });
+      response = await Promise.race([
+        getMentorResponse(msgs),
+        new Promise<string>((_, reject) => setTimeout(() => reject(new Error('timeout')), 8000)),
+      ]);
+      apiSuccess = true;
+    } catch {
+      // 静默处理，不显示任何错误
+      apiSuccess = false;
+    }
 
-      const response = await getMentorResponse(msgs);
+    if (apiSuccess && response) {
       setChatMessages(prev => [...prev, { role: 'assistant', content: response }]);
-
-      // Check if diagnosis complete
       const diagnosis = parseDiagnosisResult(response);
       if (diagnosis) {
         setDiagnosedProfile(diagnosis);
         setTimeout(() => finishOnboarding(diagnosis), 2000);
       }
-    } catch (error) {
-      // Fallback: use predefined diagnosis
-      const fallback = {
-        aiLevel: 2,
-        aiLevelLabel: '初级使用者',
-        strengths: ['学习意愿强', '有岗位专业知识'],
-        weaknesses: ['AI工具使用经验不足', '需建立AI思维'],
-        learningFocus: CAPABILITIES[selectedCapability]?.tencentTools || ['AI基础'],
-        recommendedPace: '标准进度',
-        roleSpecific: `重点学习${CAPABILITIES[selectedCapability]?.title || 'AI'}方向`,
-        tencentTools: CAPABILITIES[selectedCapability]?.tencentTools || ['腾讯元宝'],
-      };
-      setDiagnosedProfile(fallback);
-      setChatMessages(prev => [...prev, { role: 'assistant', content: '好的，我已经了解了你的情况！（使用离线评估模式）' }]);
-      setTimeout(() => finishOnboarding(fallback), 1500);
+    } else {
+      // 离线模式：根据用户回答智能生成诊断
+      const offlineDiagnosis = generateOfflineDiagnosis(msg, selectedCapability);
+      setChatMessages(prev => [...prev, {
+        role: 'assistant',
+        content: offlineDiagnosis.message,
+      }]);
+      setDiagnosedProfile(offlineDiagnosis.profile);
+      setTimeout(() => finishOnboarding(offlineDiagnosis.profile), 2000);
     }
     setIsTyping(false);
   };
