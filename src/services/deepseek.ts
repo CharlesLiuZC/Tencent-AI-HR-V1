@@ -1,7 +1,12 @@
 // DeepSeek API 服务 - AI 入职导师（RAG增强版）
-// API Key via environment variable: VITE_DEEPSEEK_API_KEY
-const API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY || '';
+// API Key via KV Cache + environment variable
+import { getDeepSeekApiKey, cacheDiagnosisResult, getCachedDiagnosis, cacheCompanionHistory, getCachedCompanionHistory } from './kvCache';
+
 const API_BASE = 'https://api.deepseek.com/v1';
+
+function getApiKey(): string {
+  return getDeepSeekApiKey();
+}
 
 import { retrieveKnowledge, RAG_KNOWLEDGE_BASE } from '../data/ragKnowledge';
 
@@ -102,7 +107,7 @@ export async function getMentorResponse(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`,
+        'Authorization': `Bearer ${getApiKey()}`,
       },
       body: JSON.stringify({
         model: 'deepseek-chat',
@@ -137,7 +142,7 @@ export async function getCompanionResponse(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`,
+        'Authorization': `Bearer ${getApiKey()}`,
       },
       body: JSON.stringify({
         model: 'deepseek-chat',
@@ -176,7 +181,7 @@ export async function getMentorResponseStream(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`,
+        'Authorization': `Bearer ${getApiKey()}`,
       },
       body: JSON.stringify({
         model: 'deepseek-chat',
