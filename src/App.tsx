@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import DashboardPage from './pages/DashboardPage';
 import AssessPage from './pages/AssessPage';
 import OnboardingWizard from './components/OnboardingWizard';
+import PenguinCompanion from './components/PenguinCompanion';
 import { useState } from 'react';
 
 function AppContent() {
@@ -29,6 +30,10 @@ function AppContent() {
           <Route path="/assess/:phase" element={<AssessPage />} />
         </Routes>
       </main>
+
+      {/* 企鹅陪伴Agent - 始终可见 */}
+      <PenguinCompanion />
+
       <footer style={{
         textAlign: 'center',
         padding: '24px',
