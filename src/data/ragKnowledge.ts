@@ -165,6 +165,130 @@ export const RAG_KNOWLEDGE_BASE: KnowledgeChunk[] = [
     keywords: ['CRISPE', 'Prompt框架', '思维链', 'Few-shot', '反模式'],
     difficulty: 'beginner', capability: 'ai-writing',
   },
+
+  // ==================== AI生图深度知识 ====================
+  {
+    id: 'img-001', source: 'industry', category: 'AI生图',
+    title: 'Midjourney提示词公式',
+    content: 'Midjourney提示词结构：[主体描述]+[风格]+[构图]+[光照]+[色调]+[细节]+[参数]。关键参数：--ar宽高比(--ar 16:9)、--v版本(--v 6)、--s风格化(--s 750)、--chaos混沌度(--chaos 30)。进阶技巧：权重分配(cat::2 dog::1)、负向提示词(--no text, watermark)、图片混合(--blend img1 img2)。',
+    keywords: ['Midjourney', '提示词', '参数', '宽高比', '风格化'],
+    difficulty: 'beginner', capability: 'ai-image',
+  },
+  {
+    id: 'img-002', source: 'github', category: 'AI生图',
+    title: 'Stable Diffusion核心参数详解',
+    content: 'CFG Scale(提示词引导强度)：3-30，越高越贴近提示词但可能过度饱和。Steps(采样步数)：20-50，越高越精细但耗时更长。Sampler(采样器)：Euler a(快速)、DPM++ 2M Karras(平衡)、DDIM(确定性)。Seed(随机种子)：固定种子可复现结果。分辨率：512x512(SD1.5)、1024x1024(SDXL)。',
+    keywords: ['Stable Diffusion', 'CFG', 'Steps', 'Sampler', 'Seed', '分辨率'],
+    difficulty: 'intermediate', capability: 'ai-image',
+  },
+  {
+    id: 'img-003', source: 'github', category: 'AI生图',
+    title: 'ControlNet精确控制技术',
+    content: 'ControlNet通过额外条件控制AI图像生成。主要预处理器：Canny(边缘检测)、OpenPose(人体姿势)、Depth(深度图)、Scribble(涂鸦)、Lineart(线稿)、MLSD(直线检测)。使用技巧：多ControlNet组合(姿势+深度)、控制强度调节(0.3-1.0)、与LoRA配合实现风格+控制。',
+    keywords: ['ControlNet', 'Canny', 'OpenPose', '深度图', '姿势控制'],
+    difficulty: 'intermediate', capability: 'ai-image',
+  },
+  {
+    id: 'img-004', source: 'huggingface', category: 'AI生图',
+    title: 'LoRA模型训练实战',
+    content: 'LoRA(Low-Rank Adaptation)微调SD模型。数据准备：20-50张高质量图片，统一裁剪为512x512或1024x1024。训练参数：学习率1e-4、训练步数1000-3000、网络维度(rank)32-128。触发词：训练时定义触发词，推理时使用。应用场景：角色一致性、画风迁移、IP形象生成。',
+    keywords: ['LoRA', '微调', '训练', '触发词', '角色一致性'],
+    difficulty: 'advanced', capability: 'ai-image',
+  },
+
+  // ==================== AI视频深度知识 ====================
+  {
+    id: 'vid-001', source: 'industry', category: 'AI视频',
+    title: 'AI视频生成技术演进',
+    content: '2024-2026年AI视频生成技术爆发：Runway Gen-3(图生视频)、Sora(文生视频长镜头)、Seedance 2.0(腾讯24FPS实时生成)、Kling(快手图生视频)、Pika(简单易用)。核心技术：时序注意力(Temporal Attention)、扩散变换器(DiT)、Mamba-MoE混合架构。关键指标：时间一致性、运动合理性、分辨率、帧率。',
+    keywords: ['AI视频', 'Runway', 'Sora', 'Seedance', '时序注意力'],
+    difficulty: 'intermediate', capability: 'ai-video',
+  },
+  {
+    id: 'vid-002', source: 'tencent', category: 'AI视频',
+    title: '腾讯混元视频生成能力',
+    content: '腾讯混元视频生成：文生视频、图生视频、视频编辑。混元世界模型1.5支持24FPS实时生成720P高清视频。HY-World 2.0(2026.4)可直接生成可编辑3D资产，兼容Unity/Unreal Engine。核心创新：WorldMirror 2.0架构，输入真实空间视频可生成数字孪生。',
+    keywords: ['腾讯混元', '视频生成', '世界模型', '3D资产', '数字孪生'],
+    difficulty: 'advanced', capability: 'ai-video',
+  },
+
+  // ==================== AI编程深度知识 ====================
+  {
+    id: 'code-001', source: 'github', category: 'AI编程',
+    title: 'AI辅助编程最佳实践',
+    content: 'GitHub Copilot使用技巧：1)写清晰注释引导AI 2)用函数签名描述意图 3)分步骤生成复杂逻辑 4)始终审查AI生成的代码 5)用AI生成单元测试。Cursor特有功能：Agent模式(自主执行多步任务)、Composer(多文件编辑)、Chat(代码问答)。90%代码AI生成时，人的价值：架构设计、代码审查、需求理解。',
+    keywords: ['Copilot', 'Cursor', 'AI编程', '代码审查', 'Agent模式'],
+    difficulty: 'beginner', capability: 'ai-code',
+  },
+  {
+    id: 'code-002', source: 'tencent', category: 'AI编程',
+    title: '腾讯CodeBuddy实战',
+    content: '腾讯CodeBuddy覆盖95%工程师，研发提效40%。核心功能：代码补全、代码生成、代码审查、单元测试生成、代码解释。最佳实践：1)写清晰的函数注释让AI理解意图 2)用AI生成代码后人工审查 3)用AI解释复杂代码逻辑 4)用AI生成单元测试。90%代码由AI生成，人的价值在于架构设计和质量把控。',
+    keywords: ['CodeBuddy', '腾讯', 'AI编程', '代码补全', '代码审查'],
+    difficulty: 'beginner', capability: 'ai-code',
+  },
+
+  // ==================== AI文案深度知识 ====================
+  {
+    id: 'wri-001', source: 'industry', category: 'AI文案',
+    title: 'AI辅助内容创作工作流',
+    content: 'AI内容创作工作流：1)明确目标受众和内容目的 2)用AI生成大纲和初稿 3)人工审核和调整关键信息 4)AI润色和优化表达 5)人工最终审核发布。关键原则：AI是初稿生成器，不是最终发布者。质量把控：事实核查、逻辑一致性、品牌调性匹配、受众适配。',
+    keywords: ['AI文案', '内容创作', '工作流', '质量把控'],
+    difficulty: 'beginner', capability: 'ai-writing',
+  },
+  {
+    id: 'wri-002', source: 'industry', category: 'AI文案',
+    title: 'AI辅助数据分析实战',
+    content: '用AI做数据分析：1)描述数据特征(均值、分布、异常值) 2)提出假设(AI帮助生成假设) 3)验证假设(统计检验) 4)提取洞察(什么最重要) 5)生成可视化(图表说话)。工具选择：ChatGPT/Claude(通用分析)、腾讯元宝(中文数据)、Python+pandas(复杂分析)。',
+    keywords: ['数据分析', 'AI分析', '洞察提取', '可视化'],
+    difficulty: 'beginner', capability: 'ai-writing',
+  },
+
+  // ==================== AI Agent深度知识 ====================
+  {
+    id: 'agt-001', source: 'github', category: 'AI Agent',
+    title: 'Agent核心架构：感知-规划-执行-反思',
+    content: 'AI Agent核心循环：1)感知(Perception)：接收环境输入 2)规划(Planning)：制定行动计划 3)执行(Execution)：调用工具执行任务 4)反思(Reflection)：评估结果并调整。关键组件：LLM大脑、工具箱(搜索/计算/API)、记忆系统(短期/长期)、规划器(ReAct/CoT)。',
+    keywords: ['Agent架构', '感知', '规划', '执行', '反思', 'ReAct'],
+    difficulty: 'intermediate', capability: 'ai-agent',
+  },
+  {
+    id: 'agt-002', source: 'github', category: 'AI Agent',
+    title: 'Tool Use与Function Calling',
+    content: 'Tool Use让LLM调用外部工具。实现方式：1)定义工具Schema(名称、参数、描述) 2)LLM决定何时调用哪个工具 3)系统执行工具调用 4)LLM整合结果生成回复。Function Calling标准化：OpenAI/Claude/DeepSeek都支持。MCP(Model Context Protocol)：Anthropic提出的标准化工具协议。',
+    keywords: ['Tool Use', 'Function Calling', 'MCP', '工具调用'],
+    difficulty: 'intermediate', capability: 'ai-agent',
+  },
+  {
+    id: 'agt-003', source: 'tencent', category: 'AI Agent',
+    title: '腾讯Agent Suite与WorkBuddy',
+    content: '腾讯2026年发布Agent Suite：打通腾讯文档、腾讯网盘、腾讯乐享三大产品。WorkBuddy企业版：7x24数字员工、Agent管理后台。核心理念：从超级个体到超级团队。MAGIC Agents五类智能体：挖掘、编排、内容、互动、分析。数据飞轮：人负责目标与决策，AI负责感知、分析、执行。',
+    keywords: ['Agent Suite', 'WorkBuddy', 'MAGIC Agents', '腾讯', '数字员工'],
+    difficulty: 'intermediate', capability: 'ai-agent',
+  },
+
+  // ==================== AI研究深度知识 ====================
+  {
+    id: 'res-001', source: 'huggingface', category: 'AI研究',
+    title: 'SFT/LoRA/RLHF微调技术对比',
+    content: 'SFT(Supervised Fine-Tuning)：用标注数据微调全量参数，效果好但成本高。LoRA(Low-Rank Adaptation)：只训练低秩矩阵，参数量减少90%+，效果接近SFT。RLHF(Reinforcement Learning from Human Feedback)：用人类偏好优化模型行为，对齐人类价值观。应用选择：小数据用LoRA、大数据用SFT、对齐用RLHF。',
+    keywords: ['SFT', 'LoRA', 'RLHF', '微调', '参数高效'],
+    difficulty: 'advanced', capability: 'ai-research',
+  },
+  {
+    id: 'res-002', source: 'huggingface', category: 'AI研究',
+    title: 'Transformer架构核心机制',
+    content: 'Transformer核心：Self-Attention(自注意力)让每个token关注所有其他token。Multi-Head Attention(多头注意力)并行学习不同类型的注意力模式。Position Encoding(位置编码)注入序列位置信息。Feed-Forward Network(前馈网络)进行非线性变换。Layer Normalization稳定训练。残差连接防止梯度消失。',
+    keywords: ['Transformer', 'Self-Attention', 'Multi-Head', '位置编码', 'LayerNorm'],
+    difficulty: 'advanced', capability: 'ai-research',
+  },
+  {
+    id: 'res-003', source: 'andrew-ml', category: 'AI研究',
+    title: '模型评估与选择方法论',
+    content: '模型评估三划分：训练集(70%)/验证集(15%)/测试集(15%)。交叉验证：K-Fold交叉验证评估泛化能力。评估指标：分类用Accuracy/Precision/Recall/F1，回归用MSE/RMSE/R²，生成用BLEU/ROUGE/人工评估。过拟合诊断：训练loss下降但验证loss上升。正则化：Dropout、L2正则、早停。',
+    keywords: ['模型评估', '交叉验证', '过拟合', '正则化', '评估指标'],
+    difficulty: 'intermediate', capability: 'ai-research',
+  },
 ];
 
 // RAG 检索函数：根据关键词和上下文匹配知识片段
@@ -172,13 +296,10 @@ export function retrieveKnowledge(query: string, topK: number = 3): KnowledgeChu
   const queryLower = query.toLowerCase();
   const scored = RAG_KNOWLEDGE_BASE.map(chunk => {
     let score = 0;
-    // 关键词匹配
     chunk.keywords.forEach(kw => {
       if (queryLower.includes(kw.toLowerCase())) score += 3;
     });
-    // 标题匹配
     if (queryLower.includes(chunk.title.toLowerCase())) score += 5;
-    // 内容部分匹配
     const contentWords = chunk.content.toLowerCase().split(/[，,。.\s]+/);
     contentWords.forEach(w => {
       if (w.length > 2 && queryLower.includes(w)) score += 1;
@@ -193,12 +314,10 @@ export function retrieveKnowledge(query: string, topK: number = 3): KnowledgeChu
     .map(s => s.chunk);
 }
 
-// 根据能力方向检索相关知识
 export function retrieveByCapability(capability: string): KnowledgeChunk[] {
   return RAG_KNOWLEDGE_BASE.filter(k => k.capability === capability);
 }
 
-// 根据难度级别检索
 export function retrieveByDifficulty(difficulty: string): KnowledgeChunk[] {
   return RAG_KNOWLEDGE_BASE.filter(k => k.difficulty === difficulty);
 }

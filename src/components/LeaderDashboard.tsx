@@ -59,6 +59,7 @@ interface Props {
 export default function LeaderDashboard({ isOpen, onClose }: Props) {
   const [selectedNewbie, setSelectedNewbie] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<'all' | 'at-risk' | 'on-track' | 'ahead'>('all');
+  const [activeView, setActiveView] = useState<'list' | 'analytics'>('list');
 
   if (!isOpen) return null;
 
@@ -68,6 +69,13 @@ export default function LeaderDashboard({ isOpen, onClose }: Props) {
 
   const riskCount = MOCK_NEWBIES.filter(n => n.status === 'at-risk').length;
   const avgCompletion = Math.round(MOCK_NEWBIES.reduce((s, n) => s + n.completionRate, 0) / MOCK_NEWBIES.length);
+  const avgAiLevel = (MOCK_NEWBIES.reduce((s, n) => s + n.aiLevel, 0) / MOCK_NEWBIES.length).toFixed(1);
+
+  // Capability distribution
+  const capDistribution = Object.values(CAPABILITIES).map(cap => {
+    const count = MOCK_NEWBIES.filter(n => n.capability === cap.key).length;
+    return { ...cap, count, percentage: Math.round(count / MOCK_NEWBIES.length * 100) };
+  }).filter(c => c.count > 0);
 
   return (
     <div style={{
@@ -105,34 +113,130 @@ export default function LeaderDashboard({ isOpen, onClose }: Props) {
           <SummaryCard label="总人数" value={`${MOCK_NEWBIES.length}`} icon="👥" color="#6366f1" />
           <SummaryCard label="平均完成率" value={`${avgCompletion}%`} icon="📈" color="#22c55e" />
           <SummaryCard label="风险预警" value={`${riskCount}`} icon="⚠️" color="#ef4444" />
-          <SummaryCard label="超前进度" value={`${MOCK_NEWBIES.filter(n => n.status === 'ahead').length}`} icon="🚀" color="#f59e0b" />
+          <SummaryCard label="平均AI水平" value={avgAiLevel} icon="🤖" color="#8b5cf6" />
         </div>
 
-        {/* Filter */}
+        {/* View Toggle */}
         <div style={{
-          display: 'flex', gap: '6px', padding: '10px 20px',
+          display: 'flex', gap: '8px', padding: '10px 20px',
           borderBottom: '1px solid #e5e7eb',
         }}>
-          {[
-            { key: 'all', label: '全部', color: '#6366f1' },
-            { key: 'at-risk', label: '⚠️ 风险预警', color: '#ef4444' },
-            { key: 'on-track', label: '✅ 正常进度', color: '#22c55e' },
-            { key: 'ahead', label: '🚀 超前进度', color: '#f59e0b' },
-          ].map(f => (
-            <button key={f.key} onClick={() => setFilterStatus(f.key as any)} style={{
-              padding: '5px 12px', borderRadius: '8px',
-              border: filterStatus === f.key ? `2px solid ${f.color}` : '2px solid #e5e7eb',
-              background: filterStatus === f.key ? `${f.color}12` : 'white',
-              cursor: 'pointer', fontSize: '12px', fontWeight: filterStatus === f.key ? 600 : 400,
-              color: filterStatus === f.key ? f.color : '#6b7280',
-            }}>{f.label}</button>
-          ))}
+          <button onClick={() => setActiveView('list')} style={{
+            padding: '6px 14px', borderRadius: '8px',
+            border: activeView === 'list' ? '2px solid #6366f1' : '2px solid #e5e7eb',
+            background: activeView === 'list' ? '#6366f112' : 'white',
+            cursor: 'pointer', fontSize: '12px', fontWeight: activeView === 'list' ? 600 : 400,
+            color: activeView === 'list' ? '#6366f1' : '#6b7280',
+          }}>📋 人员列表</button>
+          <button onClick={() => setActiveView('analytics')} style={{
+            padding: '6px 14px', borderRadius: '8px',
+            border: activeView === 'analytics' ? '2px solid #8b5cf6' : '2px solid #e5e7eb',
+            background: activeView === 'analytics' ? '#8b5cf612' : 'white',
+            cursor: 'pointer', fontSize: '12px', fontWeight: activeView === 'analytics' ? 600 : 400,
+            color: activeView === 'analytics' ? '#8b5cf6' : '#6b7280',
+          }}>📊 数据分析</button>
         </div>
 
-        {/* Newbie List */}
-        <div style={{ padding: '12px 20px', maxHeight: '400px', overflowY: 'auto' }}>
-          {filtered.map(newbie => {
-            const cap = CAPABILITIES[newbie.capability];
+        {/* Analytics View */}
+        {activeView === 'analytics' && (
+          <div style={{ padding: '16px 20px', maxHeight: '450px', overflowY: 'auto' }}>
+            {/* Capability Distribution */}
+            <div style={{
+              background: 'white', borderRadius: '14px', padding: '16px',
+              marginBottom: '12px', border: '1px solid #e5e7eb',
+            }}>
+              <h3 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 600 }}>🎯 能力方向分布</h3>
+              {capDistribution.map(cap => (
+                <div key={cap.key} style={{ marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span style={{ fontSize: '12px', color: '#374151' }}>{cap.icon} {cap.title}</span>
+                    <span style={{ fontSize: '12px', color: '#6b7280' }}>{cap.count}人 ({cap.percentage}%)</span>
+                  </div>
+                  <div style={{ height: '8px', borderRadius: '4px', background: '#e5e7eb' }}>
+                    <div style={{
+                      height: '100%', width: `${cap.percentage}%`,
+                      background: cap.color, borderRadius: '4px',
+                      transition: 'width 0.5s ease',
+                    }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Risk Analysis */}
+            <div style={{
+              background: 'white', borderRadius: '14px', padding: '16px',
+              marginBottom: '12px', border: '1px solid #e5e7eb',
+            }}>
+              <h3 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 600 }}>⚠️ 风险分析</h3>
+              {MOCK_NEWBIES.filter(n => n.status === 'at-risk').map(n => {
+                const cap = CAPABILITIES[n.capability];
+                return (
+                  <div key={n.id} style={{
+                    padding: '10px', borderRadius: '10px', background: '#fef2f2',
+                    border: '1px solid #fecaca', marginBottom: '8px',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '16px' }}>{cap.icon}</span>
+                      <div>
+                        <p style={{ margin: 0, fontSize: '13px', fontWeight: 600 }}>{n.name}</p>
+                        <p style={{ margin: '2px 0 0', fontSize: '11px', color: '#ef4444' }}>
+                          完成率 {n.completionRate}% · 最近活跃 {n.lastActive}
+                        </p>
+                      </div>
+                    </div>
+                    <p style={{ margin: '6px 0 0', fontSize: '11px', color: '#6b7280' }}>
+                      建议：关注学习频率，安排1v1辅导，了解是否存在工作冲突
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Team Insights */}
+            <div style={{
+              background: 'white', borderRadius: '14px', padding: '16px',
+              border: '1px solid #e5e7eb',
+            }}>
+              <h3 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 600 }}>💡 团队洞察</h3>
+              <div style={{ fontSize: '13px', color: '#4b5563', lineHeight: '1.8' }}>
+                <p style={{ margin: '4px 0' }}>• 平均入职天数：{Math.round(MOCK_NEWBIES.reduce((s, n) => s + n.dayInCompany, 0) / MOCK_NEWBIES.length)} 天</p>
+                <p style={{ margin: '4px 0' }}>• 最热门方向：{capDistribution.sort((a, b) => b.count - a.count)[0]?.title}</p>
+                <p style={{ margin: '4px 0' }}>• 最高完成率：{Math.max(...MOCK_NEWBIES.map(n => n.completionRate))}% ({MOCK_NEWBIES.find(n => n.completionRate === Math.max(...MOCK_NEWBIES.map(n => n.completionRate)))?.name})</p>
+                <p style={{ margin: '4px 0' }}>• 需要关注：{riskCount} 位新人处于风险状态</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* List View */}
+        {activeView === 'list' && (
+          <>
+            {/* Filter */}
+            <div style={{
+              display: 'flex', gap: '6px', padding: '10px 20px',
+              borderBottom: '1px solid #e5e7eb',
+            }}>
+              {[
+                { key: 'all', label: '全部', color: '#6366f1' },
+                { key: 'at-risk', label: '⚠️ 风险预警', color: '#ef4444' },
+                { key: 'on-track', label: '✅ 正常进度', color: '#22c55e' },
+                { key: 'ahead', label: '🚀 超前进度', color: '#f59e0b' },
+              ].map(f => (
+                <button key={f.key} onClick={() => setFilterStatus(f.key as any)} style={{
+                  padding: '5px 12px', borderRadius: '8px',
+                  border: filterStatus === f.key ? `2px solid ${f.color}` : '2px solid #e5e7eb',
+                  background: filterStatus === f.key ? `${f.color}12` : 'white',
+                  cursor: 'pointer', fontSize: '12px', fontWeight: filterStatus === f.key ? 600 : 400,
+                  color: filterStatus === f.key ? f.color : '#6b7280',
+                }}>{f.label}</button>
+              ))}
+            </div>
+
+            {/* Newbie List */}
+            <div style={{ padding: '12px 20px', maxHeight: '400px', overflowY: 'auto' }}>
+              {filtered.map(newbie => {
+                const cap = CAPABILITIES[newbie.capability];
             const expanded = selectedNewbie === newbie.id;
             const statusColors = { 'on-track': '#22c55e', 'at-risk': '#ef4444', 'ahead': '#f59e0b' };
             const statusLabels = { 'on-track': '正常', 'at-risk': '风险', 'ahead': '超前' };
@@ -245,7 +349,9 @@ export default function LeaderDashboard({ isOpen, onClose }: Props) {
               </div>
             );
           })}
-        </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
