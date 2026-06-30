@@ -69,6 +69,599 @@ button {
   }
 }
 
+.daily-lesson {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.daily-complete-toggle {
+  position: absolute;
+  left: -35px;
+  top: 20px;
+  width: 31px;
+  height: 31px;
+  border: 3px solid #f8fafc;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, .2);
+  z-index: 2;
+}
+
+.daily-lesson-shell {
+  padding: 17px 19px;
+  background: #fff;
+  border: 1px solid #dbe5ee;
+  border-radius: 8px;
+  box-shadow: 0 3px 12px rgba(23, 42, 66, .07);
+}
+
+.daily-lesson.is-complete .daily-lesson-shell {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.daily-lesson.is-complete .daily-lesson-heading h3 {
+  text-decoration: line-through;
+  color: #64748b;
+}
+
+.daily-resource-row {
+  display: flex;
+  gap: 7px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.daily-lesson-heading {
+  display: flex;
+  gap: 13px;
+  align-items: flex-start;
+}
+
+.daily-lesson-heading > span:first-child {
+  min-width: 61px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.daily-lesson-heading > div {
+  min-width: 0;
+  flex: 1;
+}
+
+.daily-lesson-heading h3 {
+  margin: 0;
+  color: #172033;
+  font-size: 16px;
+}
+
+.daily-lesson-heading p {
+  margin: 5px 0 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.daily-duration {
+  color: #8291a4;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.daily-action-panel {
+  margin: 15px 0 12px;
+  padding: 15px 17px;
+  border-left: 5px solid #f59e0b;
+  background: #fff8e6;
+}
+
+.daily-action-panel small {
+  display: block;
+  margin-bottom: 5px;
+  color: #b45309;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.daily-action-panel strong {
+  display: block;
+  color: #172033;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.daily-acceptance {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  padding-top: 12px;
+  border-top: 1px solid #e5edf4;
+}
+
+.daily-acceptance b {
+  color: #334155;
+  font-size: 12px;
+}
+
+.daily-acceptance ul {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 6px 0 0;
+  padding-left: 17px;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.daily-acceptance > button,
+.daily-submit-form button {
+  padding: 8px 13px;
+  border: 1px solid #0ea5a8;
+  border-radius: 5px;
+  color: #087f82;
+  background: #ecfeff;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.daily-submit-form {
+  margin-top: 14px;
+  padding: 15px;
+  border: 1px solid #bae6fd;
+  background: #f0f9ff;
+}
+
+.daily-submit-form p {
+  margin: 0 0 9px;
+  color: #475569;
+  font-size: 12px;
+}
+
+.daily-submit-form textarea {
+  width: 100%;
+  min-height: 92px;
+  padding: 10px;
+  border: 1px solid #bfd2e2;
+  border-radius: 5px;
+  resize: vertical;
+  font: inherit;
+}
+
+.daily-file-input {
+  display: flex;
+  align-items: center;
+  margin-top: 9px;
+  padding: 9px 11px;
+  border: 1px dashed #7dd3fc;
+  color: #0369a1;
+  background: #fff;
+  cursor: pointer;
+}
+
+.daily-file-input input {
+  margin-left: auto;
+  max-width: 220px;
+}
+
+.daily-submit-form > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.daily-submit-form button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.daily-submission-summary {
+  display: grid;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 11px 13px;
+  color: #166534;
+  background: #dcfce7;
+  font-size: 12px;
+}
+
+.daily-submission-summary em {
+  font-style: normal;
+  color: #15803d;
+}
+
+@media (max-width: 700px) {
+  .daily-lesson-heading,
+  .daily-acceptance {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .daily-action-panel strong {
+    font-size: 16px;
+  }
+
+  .daily-acceptance ul {
+    display: block;
+  }
+}
+
+.assessment-page {
+  min-height: calc(100vh - 140px);
+  padding: 28px 24px 64px;
+  background: #f5f8fb;
+}
+
+.assessment-phase-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.assessment-phase-tabs a {
+  padding: 9px 16px;
+  border: 1px solid #d5dee8;
+  border-radius: 6px;
+  color: #64748b;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.assessment-phase-tabs a.active {
+  color: #0369a1;
+  border-color: #38bdf8;
+  background: #f0f9ff;
+}
+
+.assessment-entry {
+  max-width: 680px;
+  margin: 70px auto 0;
+  padding: 42px;
+  border: 1px solid #dbe5ee;
+  border-top: 5px solid #0ea5a8;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 16px 40px rgba(30, 64, 90, .08);
+}
+
+.assessment-entry small,
+.battle-workspace header small,
+.challenge-brief > small,
+.challenge-room header small {
+  color: #0284c7;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.assessment-entry h1 {
+  margin: 8px 0 12px;
+  color: #172033;
+  font-size: 28px;
+}
+
+.assessment-entry p {
+  color: #52657a;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.assessment-entry > div {
+  margin: 20px 0;
+  padding: 12px 14px;
+  color: #334155;
+  background: #f1f5f9;
+  font-weight: 700;
+}
+
+.assessment-entry button,
+.assessment-back {
+  padding: 11px 18px;
+  border: 0;
+  border-radius: 5px;
+  color: #fff;
+  background: #0284c7;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.assessment-entry.phase-day60 {
+  border-top-color: #2563eb;
+}
+
+.assessment-entry.phase-day90 {
+  border-top-color: #7c3aed;
+}
+
+.battle-workspace,
+.challenge-room {
+  max-width: 960px;
+  margin: 0 auto;
+  border: 1px solid #cad8e4;
+  background: #fff;
+}
+
+.battle-workspace > header,
+.challenge-room > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  color: #fff;
+  background: #101e31;
+}
+
+.battle-workspace h1,
+.challenge-room h1 {
+  margin: 3px 0 0;
+  font-size: 20px;
+}
+
+.battle-workspace header button {
+  padding: 8px 12px;
+  border: 1px solid #52657a;
+  color: #dbeafe;
+  background: transparent;
+  cursor: pointer;
+}
+
+.battle-context-strip {
+  display: flex;
+  gap: 24px;
+  padding: 11px 24px;
+  color: #475569;
+  background: #eaf1f7;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.battle-chat {
+  height: 470px;
+  overflow-y: auto;
+  padding: 24px;
+  background: #f7fafc;
+}
+
+.battle-message {
+  max-width: 76%;
+  margin-bottom: 14px;
+  padding: 13px 15px;
+  white-space: pre-wrap;
+  line-height: 1.65;
+  font-size: 14px;
+}
+
+.battle-message.assistant {
+  border: 1px solid #d4e1eb;
+  background: #fff;
+}
+
+.battle-message.user {
+  margin-left: auto;
+  color: #fff;
+  background: #0369a1;
+}
+
+.battle-answer-box {
+  display: flex;
+  gap: 10px;
+  padding: 16px;
+  border-top: 1px solid #dbe5ee;
+}
+
+.battle-answer-box textarea,
+.challenge-room textarea {
+  min-height: 95px;
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #b9cad8;
+  resize: vertical;
+  font: inherit;
+}
+
+.battle-answer-box button,
+.challenge-room > button,
+.challenge-brief button,
+.ability-report > button {
+  padding: 10px 17px;
+  border: 0;
+  color: #fff;
+  background: #0284c7;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.battle-answer-box button:disabled,
+.challenge-room > button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.challenge-brief {
+  max-width: 760px;
+  margin: 30px auto;
+  padding: 38px;
+  border: 1px solid #cbd5e1;
+  border-top: 6px solid #7c3aed;
+  background: #fff;
+}
+
+.challenge-brief h1 {
+  margin: 7px 0 12px;
+  font-size: 28px;
+}
+
+.challenge-brief > p {
+  color: #475569;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.challenge-brief > div {
+  margin: 18px 0;
+  padding: 15px;
+  background: #f8fafc;
+}
+
+.challenge-brief li,
+.challenge-room li {
+  margin-top: 6px;
+  color: #475569;
+}
+
+.challenge-brief .challenge-warning {
+  padding: 12px;
+  color: #9a3412;
+  background: #fff7ed;
+  font-size: 13px;
+}
+
+.challenge-brief button.secondary {
+  margin-left: 8px;
+  color: #475569;
+  background: #e2e8f0;
+}
+
+.challenge-room > header > strong {
+  color: #fbbf24;
+  font-family: monospace;
+  font-size: 32px;
+}
+
+.challenge-room > section,
+.challenge-room > textarea,
+.challenge-room > label,
+.challenge-room > button {
+  margin: 18px 24px 0;
+}
+
+.challenge-room > textarea {
+  display: block;
+  width: calc(100% - 48px);
+  min-height: 190px;
+}
+
+.challenge-room > label {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px;
+  border: 1px dashed #7c3aed;
+  color: #6d28d9;
+  background: #faf5ff;
+}
+
+.challenge-room > button {
+  margin-bottom: 24px;
+}
+
+.ability-report {
+  margin: 20px;
+  padding: 24px;
+  border: 1px solid #bae6fd;
+  background: #f8fcff;
+}
+
+.ability-score {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.ability-score strong {
+  color: #0369a1;
+  font-size: 46px;
+}
+
+.ability-dimensions {
+  display: grid;
+  gap: 10px;
+}
+
+.ability-dimensions > div {
+  display: grid;
+  grid-template-columns: 110px minmax(120px, 1fr) 34px;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.ability-dimensions i {
+  height: 9px;
+  overflow: hidden;
+  background: #dbe5ee;
+}
+
+.ability-dimensions i b {
+  display: block;
+  height: 100%;
+  background: #0ea5a8;
+}
+
+.ability-feedback {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.ability-feedback > div {
+  padding: 14px;
+  background: #fff;
+}
+
+.ability-feedback p {
+  margin: 7px 0 0;
+  color: #52657a;
+  font-size: 12px;
+}
+
+.ability-next {
+  padding: 12px;
+  color: #713f12;
+  background: #fef9c3;
+}
+
+@media (max-width: 700px) {
+  .assessment-page {
+    padding: 18px 12px 48px;
+  }
+
+  .assessment-entry,
+  .challenge-brief {
+    margin-top: 24px;
+    padding: 24px 18px;
+  }
+
+  .battle-context-strip,
+  .ability-feedback {
+    grid-template-columns: 1fr;
+  }
+
+  .battle-context-strip {
+    display: grid;
+    gap: 5px;
+  }
+
+  .battle-message {
+    max-width: 92%;
+  }
+
+  .battle-answer-box {
+    flex-direction: column;
+  }
+}
+
 .tk-shop-backdrop {
   position: fixed;
   inset: 0;

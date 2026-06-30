@@ -2,6 +2,8 @@ import { LearningUnit, Phase, Capability } from '../types';
 import { CAPABILITIES, getLearningPath, PHASES } from '../data/learningPaths';
 import { getResourceColor, getResourceIcon, getResourcesByUnit } from '../data/resourceLinks';
 import UnitCard from './UnitCard';
+import { useState } from 'react';
+import { useApp } from '../context/AppContext';
 
 interface Props {
   role: Capability;
@@ -189,34 +191,40 @@ function DailyLessonCard({
   color: string;
 }) {
   const resources = getResourcesByUnit(unit.id, role).slice(0, 2);
+  const { progress, submitDailyLesson, undoDailyLesson } = useApp();
+  const lessonId = `${unit.id}:day-${lesson.day}`;
+  const submission = progress.dailySubmissions[lessonId];
+  const [note, setNote] = useState(submission?.note || '');
+  const [fileName, setFileName] = useState(submission?.fileName || '');
+  const [showSubmit, setShowSubmit] = useState(false);
+  const canSubmit = note.trim().length >= 10 &&
+    (lesson.submissionType === 'text' || Boolean(fileName));
+
+  const completeLesson = () => {
+    if (!canSubmit) return;
+    submitDailyLesson({
+      lessonId,
+      note: note.trim(),
+      fileName: fileName || undefined,
+      completedAt: new Date().toISOString(),
+    });
+    setShowSubmit(false);
+  };
 
   return (
-    <article style={{ position: 'relative', marginBottom: '14px' }}>
-      <div style={{
-        position: 'absolute',
-        left: '-32px',
-        top: '18px',
-        width: '25px',
-        height: '25px',
-        display: 'grid',
-        placeItems: 'center',
-        color: 'white',
-        fontSize: '10px',
-        fontWeight: 800,
-        background: color,
-        borderRadius: '50%',
-        boxShadow: `0 3px 9px ${color}50`,
-      }}>{lesson.day}</div>
+    <article className={`daily-lesson ${submission ? 'is-complete' : ''}`}>
+      <button
+        className="daily-complete-toggle"
+        style={{ background: submission ? '#16a34a' : color }}
+        onClick={() => submission ? undoDailyLesson(lessonId) : setShowSubmit(true)}
+        aria-label={submission ? `取消完成 Day ${lesson.day}` : `提交 Day ${lesson.day} 验收`}
+      >
+        {submission ? '✓' : lesson.day}
+      </button>
 
-      <div style={{
-        padding: '15px 17px',
-        background: 'white',
-        border: '1px solid #dfe7ef',
-        borderRadius: '7px',
-        boxShadow: '0 3px 10px rgba(23, 42, 66, .06)',
-      }}>
+      <div className="daily-lesson-shell">
         {resources.length > 0 && (
-          <div style={{ display: 'flex', gap: '7px', marginBottom: '11px', flexWrap: 'wrap' }}>
+          <div className="daily-resource-row">
             {resources.map(resource => (
               <a
                 key={resource.url}
@@ -242,28 +250,60 @@ function DailyLessonCard({
             ))}
           </div>
         )}
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-          <div style={{
-            minWidth: '58px',
-            padding: '5px 7px',
-            color,
-            fontSize: '10px',
-            fontWeight: 800,
-            textAlign: 'center',
-            background: `${color}12`,
-            borderRadius: '4px',
-          }}>DAY {lesson.day}</div>
-          <div style={{ minWidth: 0 }}>
-            <h3 style={{ margin: 0, color: '#18273a', fontSize: '14px' }}>{lesson.title}</h3>
-            <p style={{ margin: '5px 0', color: '#69788a', fontSize: '11px', lineHeight: 1.55 }}>{lesson.description}</p>
-            <p style={{ margin: 0, color: '#34465a', fontSize: '11px', fontWeight: 600 }}>
-              今日行动：{lesson.task}
-            </p>
+        <div className="daily-lesson-heading">
+          <span style={{ color, background: `${color}12` }}>DAY {lesson.day}</span>
+          <div>
+            <h3>{lesson.title}</h3>
+            <p>{lesson.description}</p>
           </div>
-          <span style={{ marginLeft: 'auto', color: '#90a0b2', fontSize: '10px', whiteSpace: 'nowrap' }}>
+          <span className="daily-duration">
             {lesson.duration} 分钟
           </span>
         </div>
+
+        <section className="daily-action-panel">
+          <small>今日行动</small>
+          <strong>{lesson.task}</strong>
+        </section>
+
+        <div className="daily-acceptance">
+          <div>
+            <b>验收标准</b>
+            <ul>{lesson.acceptanceCriteria.map(item => <li key={item}>{item}</li>)}</ul>
+          </div>
+          <button onClick={() => submission ? undoDailyLesson(lessonId) : setShowSubmit(value => !value)}>
+            {submission ? '✓ 已完成' : '提交验收'}
+          </button>
+        </div>
+
+        {showSubmit && !submission && (
+          <div className="daily-submit-form">
+            <p>{lesson.submissionHint}</p>
+            <textarea
+              value={note}
+              onChange={event => setNote(event.target.value)}
+              placeholder="写下成果说明、关键参数或可复现步骤（至少 10 字）"
+            />
+            {lesson.submissionType !== 'text' && (
+              <label className="daily-file-input">
+                <span>{fileName || '选择产出物附件'}</span>
+                <input type="file" onChange={event => setFileName(event.target.files?.[0]?.name || '')} />
+              </label>
+            )}
+            <div>
+              <button onClick={() => setShowSubmit(false)}>取消</button>
+              <button disabled={!canSubmit} onClick={completeLesson}>确认完成</button>
+            </div>
+          </div>
+        )}
+
+        {submission && (
+          <div className="daily-submission-summary">
+            <b>已提交</b>
+            <span>{submission.note}</span>
+            {submission.fileName && <em>附件：{submission.fileName}</em>}
+          </div>
+        )}
       </div>
     </article>
   );

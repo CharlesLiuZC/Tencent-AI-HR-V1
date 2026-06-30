@@ -116,13 +116,26 @@ function buildDailyPlan(spec: UnitSpec, week: number): DailyLesson[] {
     { title: '补强测评与下一周准备', task: `完成 10 分钟自测，针对薄弱点补练并准备下一单元。` },
   ];
 
-  return beats.slice(0, count).map((beat, index) => ({
-    day: startDay + index,
-    title: beat.title,
-    description: spec.description,
-    duration: Math.max(30, Math.round((spec.duration || 90) / count)),
-    task: beat.task,
-  }));
+  return beats.slice(0, count).map((beat, index) => {
+    const isOutputDay = index >= 2;
+    const isReviewDay = index === count - 1;
+    return {
+      day: startDay + index,
+      title: beat.title,
+      description: spec.description,
+      duration: Math.max(30, Math.round((spec.duration || 90) / count)),
+      task: beat.task,
+      acceptanceCriteria: isReviewDay
+        ? ['提交本周产出链接或文件', '写出 1 条有效结论与 1 个待改进点']
+        : isOutputDay
+          ? [`完成“${spec.objectives[Math.min(index - 2, spec.objectives.length - 1)] || spec.title}”`, '保留关键参数、Prompt 或操作截图', '结果可被他人复现']
+          : ['完成指定学习或环境准备', '用 80-200 字记录关键发现', '列出下一步可执行动作'],
+      submissionType: isOutputDay ? 'text-and-file' : 'text',
+      submissionHint: isOutputDay
+        ? '填写产出说明，并上传图片、工作流、文档或代码文件'
+        : '用简短文字提交学习结论、参数或执行记录',
+    };
+  });
 }
 
 function buildPath(capability: Capability, prefix: string, specs: UnitSpec[]): LearningUnit[] {

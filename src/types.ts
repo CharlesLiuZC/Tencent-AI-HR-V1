@@ -40,6 +40,16 @@ export interface DailyLesson {
   description: string;
   duration: number;
   task: string;
+  acceptanceCriteria: string[];
+  submissionType: 'text' | 'file' | 'text-and-file';
+  submissionHint: string;
+}
+
+export interface DailySubmission {
+  lessonId: string;
+  note: string;
+  fileName?: string;
+  completedAt: string;
 }
 
 // 学习单元（重新设计）
@@ -72,6 +82,7 @@ export interface UserProgress {
   selectedCapability: Capability | null;
   spentTencentken: number;
   redeemedRewards: string[];
+  dailySubmissions: Record<string, DailySubmission>;
 }
 
 // AI 工具

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Capability, Phase, UserProgress } from '../types';
+import { Capability, DailySubmission, Phase, UserProgress } from '../types';
 import { AvatarConfig } from '../components/AvatarDressUp';
 import { getTencentkenBalance } from '../data/gamification';
 
@@ -26,6 +26,8 @@ interface AppState {
   setAssessmentScore: (phase: Phase, score: number) => void;
   resetProgress: () => void;
   redeemReward: (rewardId: string, cost: number) => boolean;
+  submitDailyLesson: (submission: DailySubmission) => void;
+  undoDailyLesson: (lessonId: string) => void;
   userProfile: UserProfile | null;
   setUserProfile: (profile: UserProfile) => void;
   avatarConfig: AvatarConfig;
@@ -41,6 +43,7 @@ const DEFAULT_PROGRESS: UserProgress = {
   selectedCapability: null,
   spentTencentken: 0,
   redeemedRewards: [],
+  dailySubmissions: {},
 };
 
 const DEFAULT_AVATAR: AvatarConfig = {
@@ -109,6 +112,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       assessmentScores: { ...DEFAULT_PROGRESS.assessmentScores, ...parsed.assessmentScores },
       spentTencentken: parsed.spentTencentken || 0,
       redeemedRewards: Array.isArray(parsed.redeemedRewards) ? parsed.redeemedRewards : [],
+      dailySubmissions: parsed.dailySubmissions && typeof parsed.dailySubmissions === 'object'
+        ? parsed.dailySubmissions
+        : {},
     };
   });
 
@@ -166,10 +172,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return true;
   };
 
+  const submitDailyLesson = (submission: DailySubmission) => {
+    setProgress(prev => ({
+      ...prev,
+      dailySubmissions: { ...prev.dailySubmissions, [submission.lessonId]: submission },
+      lastActiveDate: new Date().toISOString(),
+    }));
+  };
+
+  const undoDailyLesson = (lessonId: string) => {
+    setProgress(prev => {
+      const dailySubmissions = { ...prev.dailySubmissions };
+      delete dailySubmissions[lessonId];
+      return { ...prev, dailySubmissions, lastActiveDate: new Date().toISOString() };
+    });
+  };
+
   return (
     <AppContext.Provider value={{
       role, setRole, progress, toggleUnit, setAssessmentScore, resetProgress,
       redeemReward,
+      submitDailyLesson, undoDailyLesson,
       userProfile, setUserProfile, avatarConfig, setAvatarConfig,
     }}>
       {children}

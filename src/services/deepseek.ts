@@ -8,6 +8,28 @@ interface ChatMessage {
   content: string;
 }
 
+export async function getAssessmentBattleResponse(
+  systemPrompt: string,
+  messages: ChatMessage[],
+): Promise<string> {
+  const response = await fetch(API_BASE, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'deepseek-v4-pro',
+      thinking: { type: 'disabled' },
+      messages: [{ role: 'system', content: systemPrompt }, ...messages],
+      stream: false,
+      max_tokens: 1200,
+      temperature: 0.55,
+    }),
+  });
+
+  if (!response.ok) throw new Error(`DeepSeek API error: ${response.status}`);
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || '';
+}
+
 // RAG增强的系统提示词
 function buildMentorPrompt(ragContext: string): string {
   return `你是腾讯成长副本的AI入职导师，名字叫"QQ鹅仔"。你的形象是一只戴着红色围巾的企鹅。
