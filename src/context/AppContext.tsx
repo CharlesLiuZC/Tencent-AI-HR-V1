@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Capability, Phase, UserProgress } from '../types';
 import { AvatarConfig } from '../components/AvatarDressUp';
+import { getTencentkenBalance } from '../data/gamification';
 
 export interface UserProfile {
   name: string;
@@ -24,6 +25,7 @@ interface AppState {
   toggleUnit: (unitId: string) => void;
   setAssessmentScore: (phase: Phase, score: number) => void;
   resetProgress: () => void;
+  redeemReward: (rewardId: string, cost: number) => boolean;
   userProfile: UserProfile | null;
   setUserProfile: (profile: UserProfile) => void;
   avatarConfig: AvatarConfig;
@@ -37,6 +39,8 @@ const DEFAULT_PROGRESS: UserProgress = {
   startDate: new Date().toISOString(),
   lastActiveDate: new Date().toISOString(),
   selectedCapability: null,
+  spentTencentken: 0,
+  redeemedRewards: [],
 };
 
 const DEFAULT_AVATAR: AvatarConfig = {
@@ -59,7 +63,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const [progress, setProgress] = useState<UserProgress>(() => {
     const saved = localStorage.getItem('gd-progress');
-    return saved ? JSON.parse(saved) : DEFAULT_PROGRESS;
+    if (!saved) return DEFAULT_PROGRESS;
+    const parsed = JSON.parse(saved) as Partial<UserProgress>;
+    return {
+      ...DEFAULT_PROGRESS,
+      ...parsed,
+      assessmentScores: { ...DEFAULT_PROGRESS.assessmentScores, ...parsed.assessmentScores },
+      spentTencentken: parsed.spentTencentken || 0,
+      redeemedRewards: parsed.redeemedRewards || [],
+    };
   });
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
@@ -105,9 +117,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setProgress(DEFAULT_PROGRESS);
   };
 
+  const redeemReward = (rewardId: string, cost: number) => {
+    if (progress.redeemedRewards.includes(rewardId) || getTencentkenBalance(progress) < cost) return false;
+    setProgress(prev => ({
+      ...prev,
+      spentTencentken: (prev.spentTencentken || 0) + cost,
+      redeemedRewards: [...(prev.redeemedRewards || []), rewardId],
+      lastActiveDate: new Date().toISOString(),
+    }));
+    return true;
+  };
+
   return (
     <AppContext.Provider value={{
       role, setRole, progress, toggleUnit, setAssessmentScore, resetProgress,
+      redeemReward,
       userProfile, setUserProfile, avatarConfig, setAvatarConfig,
     }}>
       {children}

@@ -593,12 +593,147 @@ export const RESOURCE_LINKS: ResourceLink[] = [
   },
 ];
 
+const DIRECTION_RESOURCES: Partial<Record<Role, ResourceLink['resources']>> = {
+  'ai-image': [
+    {
+      type: 'docs', title: 'ComfyUI Wiki 中文教程', url: 'https://comfyui-wiki.com/zh',
+      description: '从安装、模型管理到节点工作流的中文教程与参考手册',
+      difficulty: 'beginner', capabilities: ['ai-image'],
+    },
+    {
+      type: 'github', title: 'ControlNet 官方实现', url: 'https://github.com/lllyasviel/ControlNet',
+      description: 'ControlNet 原理、模型和姿态/边缘/深度控制示例',
+      difficulty: 'intermediate', capabilities: ['ai-image'],
+    },
+    {
+      type: 'huggingface', title: 'Diffusers ControlNet 指南', url: 'https://huggingface.co/docs/diffusers/using-diffusers/controlnet',
+      description: 'Hugging Face 官方 ControlNet 推理与多条件控制文档',
+      difficulty: 'intermediate', capabilities: ['ai-image'],
+    },
+  ],
+  'ai-video': [
+    {
+      type: 'docs', title: 'Runway Academy', url: 'https://academy.runwayml.com/',
+      description: 'Runway 官方生成视频、镜头运动与工作流课程',
+      difficulty: 'beginner', capabilities: ['ai-video'],
+    },
+    {
+      type: 'huggingface', title: 'Diffusers 视频生成文档', url: 'https://huggingface.co/docs/diffusers/api/pipelines/stable_diffusion/svd',
+      description: 'Stable Video Diffusion 官方管线与参数参考',
+      difficulty: 'intermediate', capabilities: ['ai-video'],
+    },
+  ],
+  'ai-writing': [
+    {
+      type: 'github', title: 'awesome-chatgpt-prompts 中文调教指南', url: 'https://github.com/PlexPt/awesome-chatgpt-prompts-zh',
+      description: '覆盖写作、角色设定和结构化输出的中文 Prompt 示例',
+      difficulty: 'beginner', capabilities: ['ai-writing'],
+    },
+    {
+      type: 'docs', title: 'Anthropic Prompt Engineering', url: 'https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview',
+      description: 'Claude 官方提示词工程与长文本实践指南',
+      difficulty: 'intermediate', capabilities: ['ai-writing'],
+    },
+  ],
+  'ai-code': [
+    {
+      type: 'github', title: 'GitHub Copilot 官方文档', url: 'https://docs.github.com/en/copilot',
+      description: '配置、自定义指令、代码审查和 Agent 工作流',
+      difficulty: 'beginner', capabilities: ['ai-code'],
+    },
+    {
+      type: 'docs', title: 'Cursor 官方文档', url: 'https://docs.cursor.com/',
+      description: '代码库索引、规则文件、Agent 模式与多文件编辑',
+      difficulty: 'beginner', capabilities: ['ai-code'],
+    },
+  ],
+  'ai-agent': [
+    {
+      type: 'docs', title: 'Dify 官方文档', url: 'https://docs.dify.ai/',
+      description: '知识库、工作流、Agent 工具和应用发布指南',
+      difficulty: 'beginner', capabilities: ['ai-agent'],
+    },
+    {
+      type: 'github', title: 'LangChain 官方仓库', url: 'https://github.com/langchain-ai/langchain',
+      description: 'RAG、工具调用与 Agent 编排参考实现',
+      difficulty: 'intermediate', capabilities: ['ai-agent'],
+    },
+  ],
+  'ai-research': [
+    {
+      type: 'product', title: 'Papers with Code', url: 'https://paperswithcode.com/',
+      description: '论文、代码和公开基准一站式检索',
+      difficulty: 'intermediate', capabilities: ['ai-research'],
+    },
+    {
+      type: 'huggingface', title: 'Hugging Face Daily Papers', url: 'https://huggingface.co/papers',
+      description: '追踪新模型、世界模型与多模态 Agent 研究进展',
+      difficulty: 'advanced', capabilities: ['ai-research'],
+    },
+  ],
+};
+
+const UNIT_RESOURCE_OVERRIDES: ResourceLink[] = [
+  {
+    unitId: 'img30-1',
+    resources: [
+      {
+        type: 'github', title: 'awesome-chatgpt-prompts 中文调教指南',
+        url: 'https://github.com/PlexPt/awesome-chatgpt-prompts-zh',
+        description: '用结构化 Prompt 练习主体、风格、光照与构图表达',
+        difficulty: 'beginner', capabilities: ['ai-image'],
+      },
+      {
+        type: 'docs', title: 'Midjourney 参数文档',
+        url: 'https://docs.midjourney.com/docs/parameter-list',
+        description: '官方参数列表与提示词控制参考',
+        difficulty: 'beginner', capabilities: ['ai-image'],
+      },
+    ],
+  },
+  {
+    unitId: 'img30-2',
+    resources: [
+      {
+        type: 'github', title: 'Stable Diffusion WebUI',
+        url: 'https://github.com/AUTOMATIC1111/stable-diffusion-webui',
+        description: 'AUTOMATIC1111 官方仓库、安装说明和参数文档',
+        difficulty: 'intermediate', capabilities: ['ai-image'],
+      },
+    ],
+  },
+  {
+    unitId: 'img30-3',
+    resources: DIRECTION_RESOURCES['ai-image']!.slice(1),
+  },
+  {
+    unitId: 'img60-1',
+    resources: [
+      {
+        type: 'github', title: 'Kohya LoRA 训练工具',
+        url: 'https://github.com/bmaltais/kohya_ss',
+        description: 'LoRA 数据集准备、训练参数与 GUI 工具',
+        difficulty: 'advanced', capabilities: ['ai-image'],
+      },
+    ],
+  },
+  {
+    unitId: 'img90-1',
+    resources: [DIRECTION_RESOURCES['ai-image']![0]],
+  },
+  {
+    unitId: 'img90-2',
+    resources: [DIRECTION_RESOURCES['ai-image']![0]],
+  },
+];
+
 // 获取某个学习单元的资源（按角色过滤）
 export function getResourcesByUnit(unitId: string, role?: Role): ResourceLink['resources'] {
-  const link = RESOURCE_LINKS.find(r => r.unitId === unitId);
-  if (!link) return [];
-  if (!role) return link.resources;
-  return link.resources.filter(r => r.roles === 'all' || r.roles.includes(role));
+  const link = UNIT_RESOURCE_OVERRIDES.find(r => r.unitId === unitId) ||
+    RESOURCE_LINKS.find(r => r.unitId === unitId);
+  const resources = link?.resources || (role ? DIRECTION_RESOURCES[role] || [] : []);
+  if (!role) return resources;
+  return resources.filter(r => r.capabilities === 'all' || r.capabilities.includes(role));
 }
 
 // 获取资源类型图标

@@ -1,12 +1,5 @@
-// DeepSeek API 服务 - AI 入职导师（RAG增强版）
-// API Key via KV Cache + environment variable
-import { getDeepSeekApiKey, cacheDiagnosisResult, getCachedDiagnosis, cacheCompanionHistory, getCachedCompanionHistory } from './kvCache';
-
-const API_BASE = 'https://api.deepseek.com/v1';
-
-function getApiKey(): string {
-  return getDeepSeekApiKey();
-}
+// DeepSeek API 服务 - API Key 仅由本地 Vite 服务端代理读取，不进入浏览器 bundle。
+const API_BASE = '/api/deepseek';
 
 import { retrieveKnowledge, RAG_KNOWLEDGE_BASE } from '../data/ragKnowledge';
 
@@ -119,20 +112,19 @@ function getRAGContext(messages: ChatMessage[]): string {
 // 入职诊断对话
 export async function getMentorResponse(
   messages: ChatMessage[],
-  onChunk?: (chunk: string) => void
 ): Promise<string> {
   const ragContext = getRAGContext(messages);
   const systemPrompt = buildMentorPrompt(ragContext);
 
   try {
-    const response = await fetch(`${API_BASE}/chat/completions`, {
+    const response = await fetch(API_BASE, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${getApiKey()}`,
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-pro',
+        thinking: { type: 'disabled' },
         messages: [
           { role: 'system', content: systemPrompt },
           ...messages,
@@ -160,14 +152,14 @@ export async function getCompanionResponse(
   messages: ChatMessage[],
 ): Promise<string> {
   try {
-    const response = await fetch(`${API_BASE}/chat/completions`, {
+    const response = await fetch(API_BASE, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${getApiKey()}`,
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-pro',
+        thinking: { type: 'disabled' },
         messages: [
           { role: 'system', content: COMPANION_PROMPT },
           ...messages,
@@ -199,14 +191,14 @@ export async function getMentorResponseStream(
   const systemPrompt = buildMentorPrompt(ragContext);
 
   try {
-    const response = await fetch(`${API_BASE}/chat/completions`, {
+    const response = await fetch(API_BASE, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${getApiKey()}`,
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-pro',
+        thinking: { type: 'disabled' },
         messages: [
           { role: 'system', content: systemPrompt },
           ...messages,

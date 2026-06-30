@@ -98,7 +98,15 @@ export default function PenguinMentor({ isOpen, onClose }: Props) {
   };
 
   const generateRecommendation = (profile: Record<string, string>, role: Capability): string => {
-    const roleLabel = role === 'art' ? '美术' : role === 'design' ? '策划' : role === 'dev' ? '程序' : '运营';
+    const roleLabels: Record<Capability, string> = {
+      'ai-image': 'AI 生图',
+      'ai-video': 'AI 视频',
+      'ai-code': 'AI 编程',
+      'ai-writing': 'AI 文案',
+      'ai-agent': 'AI Agent',
+      'ai-research': 'AI 研究',
+    };
+    const roleLabel = roleLabels[role];
     const level = profile.start || 'beginner';
     const style = profile.style || 'hands_on';
     const goal = profile.goal || 'efficiency';

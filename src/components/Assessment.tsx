@@ -117,7 +117,7 @@ export default function Assessment({ phase }: Props) {
                   </p>
                   {!isCorrect && (
                     <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>
-                      正确答案：{q.options[q.correctIndex]}
+                      正确答案：{q.options?.[q.correctIndex ?? -1] || '请查看题目解析'}
                     </p>
                   )}
                 </div>
@@ -209,7 +209,7 @@ export default function Assessment({ phase }: Props) {
 
         {/* Options */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
-          {currentQ.options.map((opt, i) => {
+          {(currentQ.options || []).map((opt, i) => {
             const isSelected = selectedAnswer === i;
             const isCorrect = i === currentQ.correctIndex;
             let borderColor = '#e5e7eb';

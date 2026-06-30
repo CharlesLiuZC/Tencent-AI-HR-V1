@@ -19,7 +19,7 @@ export default function InnovationPath() {
     // 计算该阶段匹配的知识基因数量
     const matchedGenes = KNOWLEDGE_GENES.filter(g =>
       g.applicable.phases.includes(phase) &&
-      (g.applicable.roles === 'all' || g.applicable.roles.includes(role))
+      (g.applicable.capabilities === 'all' || g.applicable.capabilities.includes(role))
     );
 
     return {

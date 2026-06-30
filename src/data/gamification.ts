@@ -1,3 +1,5 @@
+import type { UserProgress } from '../types';
+
 // 腾讯积分系统 - Tencentken (腾讯币)
 export interface TencentkenReward {
   id: string;
@@ -6,18 +8,32 @@ export interface TencentkenReward {
   cost: number;
   icon: string;
   category: 'token' | 'snack' | 'gift' | 'privilege';
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  stock: number;
+  badge: string;
 }
 
 export const TENCENTKEN_REWARDS: TencentkenReward[] = [
-  { id: 'r001', name: 'AI Token 额度', description: '额外 10000 次 AI 调用额度', cost: 50, icon: '🪙', category: 'token' },
-  { id: 'r002', name: '零食盲盒', description: '办公室零食角随机零食一份', cost: 30, icon: '🍪', category: 'snack' },
-  { id: 'r003', name: '腾讯企鹅公仔', description: '限定版 QQ 企鹅公仔', cost: 200, icon: '🐧', category: 'gift' },
-  { id: 'r004', name: '弹性下班卡', description: '可提前 1 小时下班一次', cost: 80, icon: '🏃', category: 'privilege' },
-  { id: 'r005', name: '咖啡券', description: '瑞幸/星巴克咖啡一杯', cost: 40, icon: '☕', category: 'snack' },
-  { id: 'r006', name: '周边T恤', description: '腾讯 AI 先锋限定T恤', cost: 300, icon: '👕', category: 'gift' },
-  { id: 'r007', name: '导师1v1', description: '与高级导师30分钟1v1交流', cost: 100, icon: '🎓', category: 'privilege' },
-  { id: 'r008', name: '展示会名额', description: '在全公司展示你的AI创新方案', cost: 150, icon: '🎤', category: 'privilege' },
+  { id: 'r001', name: 'AI Token 加油包', description: '额外 10,000 次模型调用额度', cost: 50, icon: '⚡', category: 'token', rarity: 'common', stock: 99, badge: '效率补给' },
+  { id: 'r002', name: '零食惊喜盲盒', description: '随机解锁办公室隐藏零食一份', cost: 30, icon: '🍪', category: 'snack', rarity: 'common', stock: 26, badge: '人气兑换' },
+  { id: 'r003', name: '限定企鹅公仔', description: 'AI 先锋限定款 QQ 企鹅公仔', cost: 200, icon: '🐧', category: 'gift', rarity: 'epic', stock: 8, badge: '限量周边' },
+  { id: 'r004', name: '弹性下班卡', description: '兑换一次提前 1 小时下班权益', cost: 80, icon: '🏃', category: 'privilege', rarity: 'rare', stock: 12, badge: '本周可用' },
+  { id: 'r005', name: '灵感咖啡券', description: '瑞幸或星巴克任意中杯饮品', cost: 40, icon: '☕', category: 'snack', rarity: 'common', stock: 42, badge: '即时到账' },
+  { id: 'r006', name: 'AI 先锋战袍', description: '腾讯 AI 先锋限定文化衫', cost: 300, icon: '👕', category: 'gift', rarity: 'legendary', stock: 5, badge: '传奇藏品' },
+  { id: 'r007', name: '导师 1v1 密谈', description: '与高级 AI 导师深度交流 30 分钟', cost: 100, icon: '🎓', category: 'privilege', rarity: 'rare', stock: 15, badge: '成长加速' },
+  { id: 'r008', name: '创新展示席位', description: '在公司级展示会上发布你的 AI 方案', cost: 150, icon: '🎤', category: 'privilege', rarity: 'epic', stock: 6, badge: '高光时刻' },
 ];
+
+export function getEarnedTencentken(progress: UserProgress): number {
+  return progress.completedUnits.length * 10 +
+    (progress.assessmentScores.day30 !== null ? 50 : 0) +
+    (progress.assessmentScores.day60 !== null ? 80 : 0) +
+    (progress.assessmentScores.day90 !== null ? 120 : 0);
+}
+
+export function getTencentkenBalance(progress: UserProgress): number {
+  return Math.max(0, getEarnedTencentken(progress) - (progress.spentTencentken || 0));
+}
 
 // 成就系统
 export interface Achievement {

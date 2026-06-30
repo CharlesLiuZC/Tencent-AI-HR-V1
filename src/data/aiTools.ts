@@ -99,18 +99,18 @@ export const AI_TOOLS: AITool[] = [
     description: 'AI图像生成工具，擅长艺术风格创作',
     difficulty: 2,
     useCases: ['概念设计', '场景原画', '角色设计', 'UI素材', '营销海报'],
-    capabilities: ['ai-image', 'ai-writing'],
+    capabilities: ['ai-image'],
     phases: ['day30', 'day60', 'day90'],
     url: 'https://midjourney.com',
   },
   {
-    id: 't004', name: 'Stable Diffusion', category: 'image',
-    description: '开源AI图像生成模型，支持本地部署和LoRA训练',
+    id: 't004', name: 'Stable Diffusion WebUI', category: 'image',
+    description: '可本地部署的可控生图工作台，支持模型切换、重绘、插件和批量任务',
     difficulty: 3,
     useCases: ['批量图像生成', '风格迁移', 'LoRA训练', 'ControlNet控制'],
     capabilities: ['ai-image'],
-    phases: ['day60', 'day90'],
-    url: 'https://stability.ai',
+    phases: ['day30', 'day60', 'day90'],
+    url: 'https://github.com/AUTOMATIC1111/stable-diffusion-webui',
   },
   {
     id: 't005', name: 'GitHub Copilot', category: 'code',
@@ -145,8 +145,62 @@ export const AI_TOOLS: AITool[] = [
     difficulty: 4,
     useCases: ['复杂图像工作流', '批量处理', '模型组合', 'LoRA应用'],
     capabilities: ['ai-image'],
-    phases: ['day60', 'day90'],
+    phases: ['day30', 'day60', 'day90'],
     url: 'https://github.com/comfyanonymous/ComfyUI',
+  },
+  {
+    id: 't010', name: 'ControlNet', category: 'image',
+    description: '通过姿态、边缘、深度与参考图约束生成结构，让画面可控可复现',
+    difficulty: 3,
+    useCases: ['OpenPose 姿势控制', 'Canny 线稿', 'Depth 空间控制', '多条件组合'],
+    capabilities: ['ai-image'],
+    phases: ['day30', 'day60', 'day90'],
+    url: 'https://github.com/lllyasviel/ControlNet',
+  },
+  {
+    id: 't011', name: 'Kohya LoRA', category: 'image',
+    description: 'LoRA 数据集处理、训练、参数调优与模型导出的常用工具链',
+    difficulty: 4,
+    useCases: ['风格训练', '角色一致性', '数据集标注', '权重对比'],
+    capabilities: ['ai-image'],
+    phases: ['day60', 'day90'],
+    url: 'https://github.com/bmaltais/kohya_ss',
+  },
+  {
+    id: 't012', name: 'Photoshop AI', category: 'image',
+    description: '用生成式填充、扩图和专业图层工作流完成 AI 图像精修与交付',
+    difficulty: 2,
+    useCases: ['生成式填充', '局部修复', '扩图', '素材合成'],
+    capabilities: ['ai-image'],
+    phases: ['day30', 'day60', 'day90'],
+    url: 'https://www.adobe.com/products/photoshop/generative-fill.html',
+  },
+  {
+    id: 't013', name: 'Perplexity', category: 'text',
+    description: '带来源引用的研究搜索工具，适合建立前沿动态与论文线索',
+    difficulty: 2,
+    useCases: ['技术追踪', '论文检索', '证据核验', '趋势简报'],
+    capabilities: ['ai-research'],
+    phases: ['day30', 'day60', 'day90'],
+    url: 'https://www.perplexity.ai/',
+  },
+  {
+    id: 't014', name: 'Papers with Code', category: 'code',
+    description: '将论文、官方实现和公开基准连接起来的研究复现入口',
+    difficulty: 4,
+    useCases: ['论文复现', '基准对比', '代码检索', '模型选型'],
+    capabilities: ['ai-research'],
+    phases: ['day30', 'day60', 'day90'],
+    url: 'https://paperswithcode.com/',
+  },
+  {
+    id: 't015', name: '多模态研究工作台', category: 'agent',
+    description: '组合 NotebookLM、Hugging Face 与 Colab 完成深度调研和快速验证',
+    difficulty: 5,
+    useCases: ['世界模型研究', 'A2A验证', '多模态Agent', '新模型评测'],
+    capabilities: ['ai-research'],
+    phases: ['day60', 'day90'],
+    url: 'https://huggingface.co/papers',
   },
   {
     id: 't009', name: 'Notion AI', category: 'text',
@@ -159,10 +213,17 @@ export const AI_TOOLS: AITool[] = [
   },
 ];
 
-export function getToolsByPhaseAndCapability(phase: string, capability: string): AITool[] {
-  return AI_TOOLS.filter(tool =>
-    tool.phases.includes(phase as any) && tool.capabilities.includes(capability as any)
+export function getToolsByPhaseAndCapability(phase: AITool['phases'][number], capability: string): AITool[] {
+  const matching = AI_TOOLS.filter(tool =>
+    tool.phases.includes(phase) && tool.capabilities.includes(capability as AITool['capabilities'][number])
   );
+  const directionSpecific = matching.filter(tool => tool.capabilities.length === 1);
+  const selected = directionSpecific.length >= 3 ? directionSpecific : matching;
+
+  return selected.slice(0, 6).map(tool => ({
+    ...tool,
+    difficulty: Math.min(tool.difficulty, capability === 'ai-research' ? 5 : 4) as AITool['difficulty'],
+  }));
 }
 
 export function getToolsByCategory(category: string): AITool[] {

@@ -67,16 +67,22 @@ export default function PenguinCompanion() {
   // 初始化欢迎消息
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      setMessages([{ role: 'assistant', content: pickRandom(PROACTIVE.login) }]);
-      setTimeout(() => {
+      const welcomeTimer = window.setTimeout(() => {
+        setMessages([{ role: 'assistant', content: pickRandom(PROACTIVE.login) }]);
+      }, 0);
+      const tipTimer = window.setTimeout(() => {
         setMessages(prev => [...prev, { role: 'assistant', content: pickRandom(PROACTIVE.daily) }]);
       }, 2000);
+      return () => {
+        window.clearTimeout(welcomeTimer);
+        window.clearTimeout(tipTimer);
+      };
     }
-  }, [isOpen]);
+  }, [isOpen, messages.length]);
 
-  const handleSend = async () => {
-    if (!userInput.trim() || isTyping) return;
-    const msg = userInput.trim();
+  const handleSend = async (messageOverride?: string) => {
+    const msg = (messageOverride || userInput).trim();
+    if (!msg || isTyping) return;
     setUserInput('');
     setMessages(prev => [...prev, { role: 'user', content: msg }]);
     setIsTyping(true);
@@ -158,7 +164,7 @@ export default function PenguinCompanion() {
             }}>{MOOD_EMOJIS[mood]}</div>
             <div style={{ flex: 1 }}>
               <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700 }}>QQ鹅仔</h3>
-              <p style={{ margin: '2px 0 0', fontSize: '11px', opacity: 0.8 }}>你的AI学习伙伴 · 在线陪伴中</p>
+              <p style={{ margin: '2px 0 0', fontSize: '11px', opacity: 0.8 }}>DeepSeek V4 Pro · 在线陪伴中</p>
             </div>
             <button onClick={() => setIsOpen(false)} style={{
               background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '50%',
@@ -174,7 +180,7 @@ export default function PenguinCompanion() {
               { label: '💪 加油鼓励', msg: '我今天有点累，给我加加油' },
               { label: '❓ 问问题', msg: '我有一个AI相关的问题' },
             ].map(btn => (
-              <button key={btn.label} onClick={() => { setUserInput(btn.msg); setTimeout(() => handleSend(), 100); }}
+              <button key={btn.label} onClick={() => handleSend(btn.msg)}
                 style={{ padding: '4px 10px', borderRadius: '12px', border: '1px solid #e5e7eb', background: '#f8fafc', cursor: 'pointer', fontSize: '11px', color: '#374151' }}>
                 {btn.label}
               </button>
@@ -212,7 +218,7 @@ export default function PenguinCompanion() {
               onKeyDown={e => e.key === 'Enter' && handleSend()}
               placeholder="和鹅仔聊聊天..."
               style={{ flex: 1, padding: '8px 12px', borderRadius: '12px', border: '2px solid #e5e7eb', fontSize: '13px', outline: 'none' }} />
-            <button onClick={handleSend} disabled={!userInput.trim() || isTyping}
+            <button onClick={() => handleSend()} disabled={!userInput.trim() || isTyping}
               style={{ padding: '8px 16px', borderRadius: '12px', border: 'none', background: userInput.trim() ? '#12b7f5' : '#e5e7eb', color: 'white', cursor: userInput.trim() ? 'pointer' : 'not-allowed', fontSize: '13px', fontWeight: 600 }}>
               发送
             </button>

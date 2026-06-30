@@ -12,6 +12,7 @@ const CATEGORY_ICONS: Record<string, string> = {
   code: '💻',
   audio: '🎵',
   video: '🎬',
+  agent: '🤖',
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -20,6 +21,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   code: '代码',
   audio: '音频',
   video: '视频',
+  agent: 'Agent',
 };
 
 export default function ToolRecom({ phase, role }: Props) {
@@ -99,6 +101,21 @@ export default function ToolRecom({ phase, role }: Props) {
           <div style={{ marginTop: '8px', fontSize: '10px', color: '#f59e0b' }}>
             {'★'.repeat(tool.difficulty)}{'☆'.repeat(5 - tool.difficulty)}
             <span style={{ color: '#9ca3af', marginLeft: '4px' }}>难度</span>
+          </div>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginTop: '7px',
+            paddingTop: '7px',
+            borderTop: '1px solid #eef2f6',
+            color: '#64748b',
+            fontSize: '10px',
+          }}>
+            <span>智能适配</span>
+            <strong style={{ color: '#0b8db8', fontSize: '12px' }}>
+              {Math.min(99, 88 + tool.useCases.length + (5 - tool.difficulty) * 2)}/100
+            </strong>
           </div>
         </a>
       ))}

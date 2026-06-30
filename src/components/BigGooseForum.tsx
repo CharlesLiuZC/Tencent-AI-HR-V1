@@ -16,72 +16,65 @@ interface ForumPost {
   isExcellent: boolean;
   xpReward: number;
   tags: string[];
+  images?: string[];
+  parameters?: Record<string, string>;
 }
 
-const MOCK_POSTS: ForumPost[] = [
+const asset = (filename: string) => `${import.meta.env.BASE_URL}forum/${filename}`;
+
+const INITIAL_POSTS: ForumPost[] = [
   {
     id: 'p1', author: '张小萌', avatar: '🎨', capability: 'ai-image',
-    title: '用ControlNet生成的三角洲行动角色概念图',
-    content: '使用ControlNet姿势控制+LoRA风格化，生成了3个不同风格的角色概念图。关键技巧：先用MJ生成草图，再用SD+ControlNet精修。',
-    deliverable: '3张角色概念图（写实/二次元/赛博朋克）',
+    title: '用 ControlNet 生成的战术角色概念图',
+    content: '使用 OpenPose 姿势控制 + LoRA 风格化，生成写实、二次元和赛博朋克三套角色概念图。先用姿态骨架锁定动作，再用 SDXL 完成结构生成，最后分别叠加三套风格 LoRA。',
+    deliverable: '3 张原创角色概念图 + 完整参数与工作流说明',
     likes: 42, createdAt: '2026-06-14', isExcellent: true, xpReward: 100,
-    tags: ['ControlNet', 'LoRA', '角色设计'],
+    tags: ['ControlNet', 'OpenPose', 'LoRA', '角色设计'],
+    images: [
+      asset('controlnet-realistic.png'),
+      asset('controlnet-anime.png'),
+      asset('controlnet-cyberpunk.png'),
+    ],
+    parameters: {
+      '基础模型': 'SDXL 1.0',
+      '分辨率': '832 × 1216',
+      'Sampler': 'DPM++ 2M Karras',
+      'Steps / CFG': '32 / 6.5',
+      'ControlNet': 'OpenPose XL · Weight 0.82',
+      'Control Mode': 'Balanced · Start 0 · End 0.86',
+      'LoRA': 'Tactical Gear 0.68 + Style LoRA 0.55',
+      'Seed': '184729031',
+      'Negative Prompt': 'low quality, bad anatomy, extra fingers, logo, watermark',
+    },
     comments: [
-      { author: '李大力', content: '太强了！能分享下Prompt吗？', time: '2026-06-14' },
-      { author: '王小花', content: '赛博朋克那张绝了！', time: '2026-06-15' },
+      { author: '李大力', content: '参数公开得很完整，OpenPose 的结束步数很有参考价值。', time: '2026-06-14' },
+      { author: '王小花', content: '赛博风那张的材质和轮廓控制很稳！', time: '2026-06-15' },
     ],
   },
   {
     id: 'p2', author: '赵大锤', avatar: '💻', capability: 'ai-code',
     title: '唇齿音模型训练进展分享',
-    content: '基于Wav2Lip的改进方案，已完成数据集收集（5000条标注样本）。初步训练结果：唇齿音准确率从62%提升到78%。',
-    deliverable: '训练代码+初步评估报告',
+    content: '基于 Wav2Lip 的改进方案，已完成 5000 条标注样本。初步训练结果：唇齿音准确率从 62% 提升到 78%。',
+    deliverable: '训练代码 + 初步评估报告',
     likes: 38, createdAt: '2026-06-15', isExcellent: true, xpReward: 150,
     tags: ['模型训练', 'Wav2Lip', '语音'],
-    comments: [
-      { author: '陈小美', content: '数据集是怎么标注的？想学习一下', time: '2026-06-16' },
-    ],
+    comments: [{ author: '陈小美', content: '数据集是怎么标注的？', time: '2026-06-16' }],
   },
   {
     id: 'p3', author: '孙小艺', avatar: '✍️', capability: 'ai-writing',
-    title: '用AI完成的三角洲行动版本更新策划案',
-    content: '用腾讯元宝+ChatGPT完成了一套完整的版本更新策划案。AI帮我完成了80%的初稿，我负责创意方向和质量审核。效率提升约5倍。',
-    deliverable: '完整版本更新策划案（15页）',
+    title: 'AI 辅助版本更新叙事套装',
+    content: '用腾讯元宝和 Claude 完成版本世界观、活动任务与营销文案，人工负责创意方向和一致性校验。',
+    deliverable: '版本更新叙事文档（15页）',
     likes: 25, createdAt: '2026-06-16', isExcellent: false, xpReward: 80,
-    tags: ['策划案', '腾讯元宝', '效率提升'],
-    comments: [],
+    tags: ['叙事', '腾讯元宝', '效率提升'], comments: [],
   },
   {
     id: 'p4', author: '周小智', avatar: '🤖', capability: 'ai-agent',
-    title: '自动竞品分析Agent上线了！',
-    content: '用Claude Agent SDK构建的自动竞品分析Agent已上线运行。每周一早上8点自动收集数据、生成分析报告、推送到腾讯文档。目前覆盖5款竞品。',
-    deliverable: 'Agent源码+首份自动报告',
+    title: '自动竞品分析 Agent 上线',
+    content: '每周一自动收集数据、生成报告并推送到腾讯文档，当前覆盖 5 款竞品。',
+    deliverable: 'Agent 源码 + 首份自动报告',
     likes: 56, createdAt: '2026-06-17', isExcellent: true, xpReward: 200,
-    tags: ['Agent', '自动化', '竞品分析'],
-    comments: [
-      { author: '张小萌', content: '这个太实用了！能分享到团队吗？', time: '2026-06-17' },
-      { author: '赵大锤', content: '用了哪些工具链？想学习一下', time: '2026-06-17' },
-    ],
-  },
-  {
-    id: 'p5', author: '刘小研', avatar: '🔬', capability: 'ai-research',
-    title: 'Seedance 2.0论文复现笔记',
-    content: '花了2周时间精读并复现了Seedance 2.0的核心模块。论文中最关键的创新是多尺度注意力机制，我的复现结果与论文报告基本一致。',
-    deliverable: '复现代码+对比实验报告',
-    likes: 31, createdAt: '2026-06-14', isExcellent: true, xpReward: 120,
-    tags: ['论文复现', 'Seedance', '视频生成'],
-    comments: [],
-  },
-  {
-    id: 'p6', author: '林小画', avatar: '🎨', capability: 'ai-image',
-    title: '用LoRA训练的专属游戏画风模型',
-    content: '收集了500张公司游戏的原画作为训练集，训练了一个专属LoRA模型。现在可以用AI生成与公司画风完全一致的概念图！',
-    deliverable: 'LoRA模型+生成示例+训练教程',
-    likes: 67, createdAt: '2026-06-18', isExcellent: true, xpReward: 250,
-    tags: ['LoRA', '画风训练', '概念设计'],
-    comments: [
-      { author: '孙小艺', content: '这个太牛了！能教教我吗？', time: '2026-06-18' },
-    ],
+    tags: ['Agent', '自动化', '竞品分析'], comments: [],
   },
 ];
 
@@ -91,240 +84,224 @@ interface Props {
 }
 
 export default function BigGooseForum({ isOpen, onClose }: Props) {
+  const [posts, setPosts] = useState(INITIAL_POSTS);
   const [activeTab, setActiveTab] = useState<'all' | 'excellent' | Capability>('all');
-  const [expandedPost, setExpandedPost] = useState<string | null>(null);
+  const [expandedPost, setExpandedPost] = useState<string | null>('p1');
   const [searchQuery, setSearchQuery] = useState('');
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
-  const [showCommentInput, setShowCommentInput] = useState<string | null>(null);
+  const [commentPost, setCommentPost] = useState<string | null>(null);
   const [commentText, setCommentText] = useState('');
+  const [showComposer, setShowComposer] = useState(false);
 
   if (!isOpen) return null;
 
-  const filtered = MOCK_POSTS.filter(p => {
-    const matchesTab = activeTab === 'all' || (activeTab === 'excellent' ? p.isExcellent : p.capability === activeTab);
-    const matchesSearch = !searchQuery || p.title.includes(searchQuery) || p.content.includes(searchQuery) || p.tags.some(t => t.includes(searchQuery));
+  const filtered = posts.filter(post => {
+    const matchesTab = activeTab === 'all' ||
+      (activeTab === 'excellent' ? post.isExcellent : post.capability === activeTab);
+    const query = searchQuery.trim().toLowerCase();
+    const matchesSearch = !query ||
+      post.title.toLowerCase().includes(query) ||
+      post.content.toLowerCase().includes(query) ||
+      post.tags.some(tag => tag.toLowerCase().includes(query));
     return matchesTab && matchesSearch;
   });
 
-  const handleLike = (postId: string) => {
-    setLikedPosts(prev => {
-      const next = new Set(prev);
+  const toggleLike = (postId: string) => {
+    setLikedPosts(previous => {
+      const next = new Set(previous);
       if (next.has(postId)) next.delete(postId);
       else next.add(postId);
       return next;
     });
   };
 
+  const sendComment = (postId: string) => {
+    const content = commentText.trim();
+    if (!content) return;
+    setPosts(previous => previous.map(post => post.id === postId
+      ? {
+          ...post,
+          comments: [...post.comments, {
+            author: '我',
+            content,
+            time: new Date().toISOString().slice(0, 10),
+          }],
+        }
+      : post));
+    setCommentText('');
+    setCommentPost(null);
+    setExpandedPost(postId);
+  };
+
   return (
-    <div style={{
-      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-      background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center',
-      justifyContent: 'center', zIndex: 1000,
-    }}>
-      <div style={{
-        background: '#f8fafc', borderRadius: '24px', width: '720px',
-        maxHeight: '85vh', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-      }}>
-        {/* Header */}
-        <div style={{
-          background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-          padding: '18px 20px', color: 'white',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '28px' }}>🪿</span>
-            <div>
-              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 700 }}>大鹅论坛 — 成长副本社区</h2>
-              <p style={{ margin: '2px 0 0', fontSize: '11px', opacity: 0.8 }}>
-                优秀案例实时可见 · Leader可查看进度 · 优秀作品额外奖励
-              </p>
-            </div>
-          </div>
-          <button onClick={onClose} style={{
-            background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '50%',
-            width: '32px', height: '32px', cursor: 'pointer', color: 'white', fontSize: '14px',
-          }}>✕</button>
-        </div>
+    <div className="goose-forum-backdrop" role="dialog" aria-modal="true" aria-label="大鹅论坛">
+      <div className="goose-forum">
+        <header className="goose-forum-header">
+          <div><span>🪿</span><div><h2>大鹅论坛 · 成长副本社区</h2><p>公开参数、作品和复盘，让经验可以复用</p></div></div>
+          <button onClick={onClose} aria-label="关闭论坛">×</button>
+        </header>
 
-        {/* Search + Tabs */}
-        <div style={{ background: 'white', borderBottom: '1px solid #e5e7eb' }}>
-          <div style={{ padding: '10px 16px' }}>
-            <input
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="搜索帖子、标签..."
-              style={{
-                width: '100%', padding: '8px 12px', borderRadius: '10px',
-                border: '2px solid #e5e7eb', fontSize: '13px', outline: 'none',
-              }}
-            />
-          </div>
-          <div style={{ display: 'flex', padding: '0 16px 8px', gap: '4px', overflowX: 'auto' }}>
-            <TabBtn label="全部" active={activeTab === 'all'} onClick={() => setActiveTab('all')} color="#6366f1" />
-            <TabBtn label="🏆 优秀" active={activeTab === 'excellent'} onClick={() => setActiveTab('excellent')} color="#f59e0b" />
-            {Object.values(CAPABILITIES).map(c => (
-              <TabBtn key={c.key} label={`${c.icon} ${c.title}`} active={activeTab === c.key}
-                onClick={() => setActiveTab(c.key)} color={c.color} />
+        <div className="goose-forum-controls">
+          <input value={searchQuery} onChange={event => setSearchQuery(event.target.value)} placeholder="搜索帖子、参数或标签..." />
+          <nav>
+            <FilterButton label="全部" active={activeTab === 'all'} onClick={() => setActiveTab('all')} />
+            <FilterButton label="🏆 优秀" active={activeTab === 'excellent'} onClick={() => setActiveTab('excellent')} />
+            {Object.values(CAPABILITIES).map(capability => (
+              <FilterButton
+                key={capability.key}
+                label={`${capability.icon} ${capability.title}`}
+                active={activeTab === capability.key}
+                onClick={() => setActiveTab(capability.key)}
+              />
             ))}
-          </div>
+          </nav>
         </div>
 
-        {/* Posts */}
-        <div style={{ padding: '12px 16px', maxHeight: '450px', overflowY: 'auto' }}>
+        <main className="goose-post-list">
           {filtered.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px', color: '#9ca3af' }}>
-              <span style={{ fontSize: '48px' }}>🪿</span>
-              <p style={{ margin: '12px 0 0', fontSize: '14px' }}>暂无匹配的帖子</p>
-            </div>
+            <div className="goose-empty"><span>🪿</span><p>暂无匹配的帖子</p></div>
           ) : filtered.map(post => {
-            const cap = CAPABILITIES[post.capability];
+            const capability = CAPABILITIES[post.capability];
             const expanded = expandedPost === post.id;
-            const isLiked = likedPosts.has(post.id);
+            const liked = likedPosts.has(post.id);
             return (
-              <div key={post.id} style={{
-                background: 'white', borderRadius: '14px', padding: '16px',
-                marginBottom: '10px',
-                border: post.isExcellent ? '2px solid #f59e0b' : '1px solid #e5e7eb',
-                transition: 'all 0.2s',
-              }}>
-                <div onClick={() => setExpandedPost(expanded ? null : post.id)} style={{ cursor: 'pointer' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '20px' }}>{post.avatar}</span>
-                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#1f2937' }}>{post.author}</span>
-                    <span style={{
-                      fontSize: '10px', padding: '2px 8px', borderRadius: '8px',
-                      background: `${cap.color}15`, color: cap.color, fontWeight: 600,
-                    }}>{cap.icon} {cap.title}</span>
-                    {post.isExcellent && (
-                      <span style={{
-                        fontSize: '10px', padding: '2px 8px', borderRadius: '8px',
-                        background: '#fef3c7', color: '#92400e', fontWeight: 600,
-                      }}>🏆 优秀 +{post.xpReward}XP</span>
+              <article key={post.id} className={`goose-post ${post.isExcellent ? 'is-excellent' : ''}`}>
+                <button className="goose-post-summary" onClick={() => setExpandedPost(expanded ? null : post.id)}>
+                  <div className="goose-post-meta">
+                    <span>{post.avatar}</span><strong>{post.author}</strong>
+                    <i style={{ color: capability.color }}>{capability.icon} {capability.title}</i>
+                    {post.isExcellent && <em>🏆 优秀 +{post.xpReward} XP</em>}
+                    <time>{post.createdAt}</time>
+                  </div>
+                  <h3>{post.title}</h3>
+                  <p>{post.content}</p>
+                  <div className="goose-tags">{post.tags.map(tag => <span key={tag}>#{tag}</span>)}</div>
+                </button>
+
+                {expanded && (
+                  <div className="goose-post-detail">
+                    {post.images && (
+                      <div className="goose-gallery">
+                        {post.images.map((image, index) => (
+                          <figure key={image}>
+                            <img src={image} alt={`${post.title}作品 ${index + 1}`} />
+                            <figcaption>{['写实风格', '二次元风格', '赛博朋克风格'][index] || `作品 ${index + 1}`}</figcaption>
+                          </figure>
+                        ))}
+                      </div>
                     )}
-                    <span style={{ fontSize: '11px', color: '#9ca3af', marginLeft: 'auto' }}>{post.createdAt}</span>
-                  </div>
-                  <h3 style={{ margin: '0 0 6px', fontSize: '15px', fontWeight: 600 }}>{post.title}</h3>
-                  <p style={{
-                    margin: 0, fontSize: '13px', color: '#4b5563', lineHeight: '1.5',
-                    display: expanded ? 'block' : '-webkit-box',
-                    WebkitLineClamp: expanded ? 'unset' : 2,
-                    WebkitBoxOrient: 'vertical', overflow: expanded ? 'visible' : 'hidden',
-                  }}>{post.content}</p>
-                  {post.deliverable && (
-                    <div style={{
-                      marginTop: '8px', padding: '8px 12px', borderRadius: '8px',
-                      background: '#f0fdf4', border: '1px solid #bbf7d0',
-                    }}>
-                      <p style={{ margin: 0, fontSize: '12px', color: '#166534' }}>📦 {post.deliverable}</p>
-                    </div>
-                  )}
-                  {/* Tags */}
-                  <div style={{ display: 'flex', gap: '4px', marginTop: '8px', flexWrap: 'wrap' }}>
-                    {post.tags.map(tag => (
-                      <span key={tag} style={{
-                        fontSize: '10px', padding: '2px 8px', borderRadius: '8px',
-                        background: '#f3f4f6', color: '#6b7280',
-                      }}>#{tag}</span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div style={{ display: 'flex', gap: '16px', marginTop: '10px', alignItems: 'center' }}>
-                  <button onClick={(e) => { e.stopPropagation(); handleLike(post.id); }}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '4px',
-                      background: 'none', border: 'none', cursor: 'pointer',
-                      fontSize: '12px', color: isLiked ? '#ef4444' : '#6b7280',
-                      fontWeight: isLiked ? 600 : 400,
-                    }}>
-                    {isLiked ? '❤️' : '🤍'} {post.likes + (isLiked ? 1 : 0)}
-                  </button>
-                  <button onClick={(e) => { e.stopPropagation(); setShowCommentInput(showCommentInput === post.id ? null : post.id); }}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '4px',
-                      background: 'none', border: 'none', cursor: 'pointer',
-                      fontSize: '12px', color: '#6b7280',
-                    }}>
-                    💬 {post.comments.length}
-                  </button>
-                  <button style={{
-                    display: 'flex', alignItems: 'center', gap: '4px',
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    fontSize: '12px', color: '#6b7280', marginLeft: 'auto',
-                  }}>🔗 分享</button>
-                </div>
-
-                {/* Comments */}
-                {expanded && post.comments.length > 0 && (
-                  <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #f3f4f6' }}>
-                    {post.comments.map((comment, i) => (
-                      <div key={i} style={{
-                        padding: '8px 12px', borderRadius: '8px', background: '#f8fafc',
-                        marginBottom: '6px',
-                      }}>
-                        <p style={{ margin: 0, fontSize: '12px', color: '#374151' }}>
-                          <strong>{comment.author}</strong>：{comment.content}
-                        </p>
-                        <p style={{ margin: '2px 0 0', fontSize: '10px', color: '#9ca3af' }}>{comment.time}</p>
+                    {post.parameters && (
+                      <section className="goose-parameters">
+                        <h4>ControlNet / LoRA 参数公开</h4>
+                        <div>{Object.entries(post.parameters).map(([key, value]) => (
+                          <p key={key}><span>{key}</span><code>{value}</code></p>
+                        ))}</div>
+                      </section>
+                    )}
+                    <div className="goose-deliverable">📦 {post.deliverable}</div>
+                    {post.comments.map((comment, index) => (
+                      <div className="goose-comment" key={`${comment.author}-${index}`}>
+                        <strong>{comment.author}</strong><span>{comment.content}</span><time>{comment.time}</time>
                       </div>
                     ))}
                   </div>
                 )}
 
-                {/* Comment input */}
-                {showCommentInput === post.id && (
-                  <div style={{ marginTop: '10px', display: 'flex', gap: '8px' }}>
-                    <input
-                      value={commentText}
-                      onChange={e => setCommentText(e.target.value)}
-                      placeholder="写评论..."
-                      style={{
-                        flex: 1, padding: '8px 12px', borderRadius: '10px',
-                        border: '2px solid #e5e7eb', fontSize: '12px', outline: 'none',
-                      }}
-                    />
-                    <button style={{
-                      padding: '8px 14px', borderRadius: '10px', border: 'none',
-                      background: '#f59e0b', color: 'white', cursor: 'pointer',
-                      fontSize: '12px', fontWeight: 600,
-                    }}>发送</button>
+                <footer className="goose-post-actions">
+                  <button onClick={() => toggleLike(post.id)}>{liked ? '❤️' : '🤍'} {post.likes + (liked ? 1 : 0)}</button>
+                  <button onClick={() => setCommentPost(commentPost === post.id ? null : post.id)}>💬 {post.comments.length}</button>
+                  <button onClick={() => navigator.clipboard?.writeText(post.title)}>🔗 分享</button>
+                </footer>
+
+                {commentPost === post.id && (
+                  <div className="goose-comment-form">
+                    <input value={commentText} onChange={event => setCommentText(event.target.value)} placeholder="写评论..." />
+                    <button onClick={() => sendComment(post.id)} disabled={!commentText.trim()}>发送</button>
                   </div>
                 )}
-              </div>
+              </article>
             );
           })}
-        </div>
+        </main>
 
-        {/* Footer */}
-        <div style={{
-          padding: '12px 16px', borderTop: '1px solid #e5e7eb', background: 'white',
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        }}>
-          <p style={{ margin: 0, fontSize: '11px', color: '#9ca3af' }}>
-            {MOCK_POSTS.length} 篇帖子 · {MOCK_POSTS.filter(p => p.isExcellent).length} 篇优秀作品
-          </p>
-          <button style={{
-            padding: '8px 16px', borderRadius: '10px', border: 'none',
-            background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-            color: 'white', cursor: 'pointer', fontSize: '13px', fontWeight: 600,
-          }}>✍️ 发布作品</button>
-        </div>
+        <footer className="goose-forum-footer">
+          <p>{posts.length} 篇帖子 · {posts.filter(post => post.isExcellent).length} 篇优秀作品</p>
+          <button onClick={() => setShowComposer(true)}>✍️ 发布作品</button>
+        </footer>
+      </div>
+
+      {showComposer && (
+        <PostComposer
+          onClose={() => setShowComposer(false)}
+          onPublish={post => {
+            setPosts(previous => [post, ...previous]);
+            setActiveTab('all');
+            setExpandedPost(post.id);
+            setShowComposer(false);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function PostComposer({ onClose, onPublish }: { onClose: () => void; onPublish: (post: ForumPost) => void }) {
+  const [capability, setCapability] = useState<Capability>('ai-image');
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [deliverable, setDeliverable] = useState('');
+  const [tags, setTags] = useState('');
+  const [images, setImages] = useState<string[]>([]);
+  const canPublish = title.trim() && content.trim() && deliverable.trim();
+
+  const readImages = (files: FileList | null) => {
+    if (!files) return;
+    Array.from(files).slice(0, 3).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = () => setImages(previous => [...previous, String(reader.result)].slice(0, 3));
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const publish = () => {
+    if (!canPublish) return;
+    onPublish({
+      id: `user-${Date.now()}`,
+      author: '我',
+      avatar: CAPABILITIES[capability].icon,
+      capability,
+      title: title.trim(),
+      content: content.trim(),
+      deliverable: deliverable.trim(),
+      likes: 0,
+      comments: [],
+      createdAt: new Date().toISOString().slice(0, 10),
+      isExcellent: false,
+      xpReward: 0,
+      tags: tags.split(/[,，]/).map(tag => tag.trim()).filter(Boolean),
+      images,
+    });
+  };
+
+  return (
+    <div className="goose-composer-layer">
+      <div className="goose-composer">
+        <header><div><small>SHARE YOUR WORK</small><h3>发布学习作品</h3></div><button onClick={onClose}>×</button></header>
+        <label>能力方向<select value={capability} onChange={event => setCapability(event.target.value as Capability)}>
+          {Object.values(CAPABILITIES).map(item => <option key={item.key} value={item.key}>{item.title}</option>)}
+        </select></label>
+        <label>作品标题<input value={title} onChange={event => setTitle(event.target.value)} placeholder="用一句话说明你完成了什么" /></label>
+        <label>过程与心得<textarea value={content} onChange={event => setContent(event.target.value)} placeholder="说明工具、方法、关键参数和踩坑经验" /></label>
+        <label>交付物<input value={deliverable} onChange={event => setDeliverable(event.target.value)} placeholder="例如：3 张概念图 + 工作流 JSON" /></label>
+        <label>标签<input value={tags} onChange={event => setTags(event.target.value)} placeholder="ControlNet, LoRA, 角色设计" /></label>
+        <label>作品图片（最多 3 张）<input type="file" accept="image/*" multiple onChange={event => readImages(event.target.files)} /></label>
+        {images.length > 0 && <div className="composer-preview">{images.map(image => <img key={image} src={image} alt="待发布作品预览" />)}</div>}
+        <footer><button onClick={onClose}>取消</button><button onClick={publish} disabled={!canPublish}>发布作品</button></footer>
       </div>
     </div>
   );
 }
 
-function TabBtn({ label, active, color, onClick }: {
-  label: string; active: boolean; color: string; onClick: () => void;
-}) {
-  return (
-    <button onClick={onClick} style={{
-      padding: '5px 12px', borderRadius: '8px',
-      border: active ? `2px solid ${color}` : '2px solid transparent',
-      background: active ? `${color}12` : 'transparent',
-      cursor: 'pointer', fontSize: '11px', fontWeight: active ? 600 : 400,
-      color: active ? color : '#6b7280', whiteSpace: 'nowrap', transition: 'all 0.2s',
-    }}>{label}</button>
-  );
+function FilterButton({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  return <button className={active ? 'is-active' : ''} onClick={onClick}>{label}</button>;
 }

@@ -1,256 +1,224 @@
 import { useState } from 'react';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  PolarAngleAxis,
+  PolarGrid,
+  Radar,
+  RadarChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { useApp } from '../context/AppContext';
-import { LEARNING_UNITS, PHASES } from '../data/learningPaths';
-import ProgressRing from './ProgressRing';
+import { CAPABILITIES, LEARNING_UNITS, PHASES } from '../data/learningPaths';
 import GraduationPhoto from './GraduationPhoto';
 import { Phase } from '../types';
+
+const PHASE_ORDER: Phase[] = ['day30', 'day60', 'day90'];
+const CATEGORY_META = {
+  knowledge: { label: '知识', color: '#2563eb' },
+  practice: { label: '实战', color: '#059669' },
+  challenge: { label: '挑战', color: '#d97706' },
+  sharing: { label: '分享', color: '#7c3aed' },
+} as const;
 
 export default function Dashboard() {
   const { role, progress, userProfile, avatarConfig } = useApp();
   const [showGraduation, setShowGraduation] = useState(false);
+  const capability = CAPABILITIES[role];
+  const units = LEARNING_UNITS.filter(unit => unit.capabilities.includes(role));
+  const completedUnits = units.filter(unit => progress.completedUnits.includes(unit.id));
+  const totalMinutes = units.reduce((sum, unit) => sum + unit.duration, 0);
+  const completedMinutes = completedUnits.reduce((sum, unit) => sum + unit.duration, 0);
+  const percentage = units.length ? Math.round((completedUnits.length / units.length) * 100) : 0;
+  const learnedDays = Math.max(
+    1,
+    Math.ceil((new Date(progress.lastActiveDate).getTime() - new Date(progress.startDate).getTime()) / 86400000) + 1,
+  );
+  const isFullyComplete = completedUnits.length === units.length && units.length > 0;
 
-  const allUnitsCount = LEARNING_UNITS.filter(u =>
-    u.capabilities.length === 0 || u.capabilities.includes(role)
-  ).length;
-  const completedCount = progress.completedUnits.filter(id =>
-    LEARNING_UNITS.some(u => u.id === id && (u.capabilities.length === 0 || u.capabilities.includes(role)))
-  ).length;
-  const isFullyComplete = completedCount >= allUnitsCount && allUnitsCount > 0;
-
-  const phases: Phase[] = ['day30', 'day60', 'day90'];
-
-  const phaseStats = phases.map(phase => {
-    const phaseUnits = LEARNING_UNITS.filter(u =>
-      u.phase === phase && (u.capabilities.length === 0 || u.capabilities.includes(role))
-    );
-    const completed = phaseUnits.filter(u => progress.completedUnits.includes(u.id));
+  const phaseStats = PHASE_ORDER.map(phase => {
+    const phaseUnits = units.filter(unit => unit.phase === phase);
+    const completed = phaseUnits.filter(unit => progress.completedUnits.includes(unit.id)).length;
     return {
       phase,
-      info: PHASES[phase],
+      label: PHASES[phase].subtitle,
+      completed,
       total: phaseUnits.length,
-      completed: completed.length,
-      percentage: phaseUnits.length > 0 ? (completed.length / phaseUnits.length) * 100 : 0,
-      totalMinutes: phaseUnits.reduce((sum, u) => sum + u.duration, 0),
-      completedMinutes: completed.reduce((sum, u) => sum + u.duration, 0),
+      percentage: phaseUnits.length ? Math.round((completed / phaseUnits.length) * 100) : 0,
+      color: PHASES[phase].color,
     };
   });
 
-  const totalUnits = phaseStats.reduce((sum, s) => sum + s.total, 0);
-  const totalCompleted = phaseStats.reduce((sum, s) => sum + s.completed, 0);
-  const overallPercentage = totalUnits > 0 ? (totalCompleted / totalUnits) * 100 : 0;
-
-  const totalMinutes = phaseStats.reduce((sum, s) => sum + s.totalMinutes, 0);
-  const completedMinutes = phaseStats.reduce((sum, s) => sum + s.completedMinutes, 0);
-
-  // Category breakdown
-  const categories = ['theory', 'practice', 'project', 'sharing'] as const;
-  const catLabels = { theory: '理论', practice: '实战', project: '项目', sharing: '分享' };
-  const catColors = { theory: '#3b82f6', practice: '#22c55e', project: '#f59e0b', sharing: '#8b5cf6' };
-
-  const catStats = categories.map(cat => {
-    const units = LEARNING_UNITS.filter(u =>
-      u.category === cat && (u.roles.length === 0 || u.roles.includes(role))
-    );
-    const completed = units.filter(u => progress.completedUnits.includes(u.id));
+  const categoryData = Object.entries(CATEGORY_META).map(([category, meta]) => {
+    const categoryUnits = units.filter(unit => unit.category === category);
+    const completed = categoryUnits.filter(unit => progress.completedUnits.includes(unit.id)).length;
     return {
-      category: cat,
-      label: catLabels[cat],
-      color: catColors[cat],
-      total: units.length,
-      completed: completed.length,
-      percentage: units.length > 0 ? (completed.length / units.length) * 100 : 0,
+      category: meta.label,
+      completed,
+      remaining: Math.max(0, categoryUnits.length - completed),
     };
   });
+
+  const radarData = [
+    { subject: '工具掌握', score: phaseStats[0].percentage },
+    { subject: '业务实战', score: phaseStats[1].percentage },
+    { subject: '项目交付', score: phaseStats[2].percentage },
+    { subject: '知识沉淀', score: getCategoryPercentage('knowledge', units, progress.completedUnits) },
+    { subject: '团队分享', score: getCategoryPercentage('sharing', units, progress.completedUnits) },
+  ];
+
+  const weeklyData = Array.from({ length: 12 }, (_, index) => {
+    const week = index + 1;
+    return {
+      week: `W${week}`,
+      completed: units.filter(unit => unit.week <= week && progress.completedUnits.includes(unit.id)).length,
+      target: units.filter(unit => unit.week <= week).length,
+    };
+  });
+
+  const heatmap = buildHeatmap(completedUnits.length);
 
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '24px 0' }}>
-      <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#1f2937', marginBottom: '24px' }}>
-        📊 学习进度仪表盘
-      </h1>
-
-      {/* Graduation Celebration */}
-      {isFullyComplete && (
-        <div style={{
-          background: 'linear-gradient(135deg, #fef3c7, #fde68a, #f59e0b)',
-          borderRadius: '20px', padding: '24px', marginBottom: '24px',
-          textAlign: 'center', border: '3px solid #f59e0b',
-          animation: 'glowBorder 2s ease-in-out infinite',
-        }}>
-          <span style={{ fontSize: '48px' }}>🏆</span>
-          <h2 style={{ margin: '8px 0', fontSize: '20px', fontWeight: 700, color: '#92400e' }}>
-            恭喜通关！全部 {allUnitsCount} 个学习单元已完成！
-          </h2>
-          <p style={{ margin: '0 0 16px', fontSize: '14px', color: '#78350f' }}>
-            你已从 AI 新手蜕变为 AI 先锋。快来看看你的毕业纪念照吧！
-          </p>
-          <button
-            onClick={() => setShowGraduation(true)}
-            style={{
-              padding: '14px 32px', borderRadius: '14px', border: 'none',
-              background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-              color: 'white', cursor: 'pointer', fontSize: '16px', fontWeight: 700,
-              boxShadow: '0 4px 15px rgba(245,158,11,0.4)',
-            }}
-          >
-            📸 生成毕业纪念合照
-          </button>
+    <div className="progress-dashboard">
+      <div className="dashboard-title-row">
+        <div>
+          <p>LEARNING ANALYTICS</p>
+          <h1>学习进度仪表盘</h1>
         </div>
+        <span style={{ borderColor: capability.color, color: capability.color }}>
+          {capability.icon} {capability.title}
+        </span>
+      </div>
+
+      {isFullyComplete && (
+        <button className="dashboard-graduation" onClick={() => setShowGraduation(true)}>
+          🏆 全部通关，生成毕业纪念合照
+        </button>
       )}
 
-      {/* Overall Progress */}
-      <div style={{
-        background: 'linear-gradient(135deg, #1e1b4b, #312e81)',
-        borderRadius: '20px',
-        padding: '32px',
-        color: 'white',
-        marginBottom: '24px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '32px',
-        flexWrap: 'wrap',
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <ProgressRing
-            percentage={overallPercentage}
-            size={140}
-            strokeWidth={12}
-            color="#a78bfa"
-            label="总体进度"
-          />
+      <section className="dashboard-kpis">
+        <div className="dashboard-progress-dial" style={{ '--progress': `${percentage * 3.6}deg` } as React.CSSProperties}>
+          <div><strong>{percentage}%</strong><span>总体进度</span></div>
         </div>
-        <div style={{ flex: 1, minWidth: '200px' }}>
-          <h2 style={{ margin: '0 0 16px', fontSize: '20px', fontWeight: 600 }}>
-            总体学习概览
-          </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-            <StatBox label="已完成" value={`${totalCompleted}/${totalUnits}`} sub="学习单元" />
-            <StatBox label="学习时长" value={`${completedMinutes}`} sub={`/ ${totalMinutes} 分钟`} />
-            <StatBox label="当前阶段" value={progress.currentPhase === 'day30' ? '新手村' : progress.currentPhase === 'day60' ? '副本挑战' : 'Boss战'} sub="" />
-            <StatBox label="已学习天数" value={`${Math.max(1, Math.ceil((Date.now() - new Date(progress.startDate).getTime()) / 86400000))}`} sub="天" />
-          </div>
+        <Kpi label="完成单元" value={`${completedUnits.length}/${units.length}`} detail="个" />
+        <Kpi label="投入时长" value={`${completedMinutes}`} detail={`/ ${totalMinutes} 分钟`} />
+        <Kpi label="连续学习" value={`${learnedDays}`} detail="天" />
+        <Kpi label="当前阶段" value={PHASES[progress.currentPhase].subtitle} detail={PHASES[progress.currentPhase].title} />
+      </section>
+
+      <section className="dashboard-panel contribution-panel">
+        <div className="panel-heading">
+          <div><small>ACTIVITY MAP</small><h2>学习贡献热力图</h2></div>
+          <strong>{completedUnits.length} 次有效学习</strong>
         </div>
-      </div>
-
-      {/* Phase Progress Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-        {phaseStats.map(stat => (
-          <div key={stat.phase} style={{
-            background: 'white',
-            borderRadius: '16px',
-            padding: '24px',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
-            border: `2px solid ${stat.info.color}20`,
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <span style={{ fontSize: '28px' }}>{stat.info.icon}</span>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>
-                  {stat.info.title} - {stat.info.subtitle}
-                </h3>
-                <p style={{ margin: 0, fontSize: '12px', color: '#9ca3af' }}>
-                  {stat.completed}/{stat.total} 单元完成
-                </p>
-              </div>
-            </div>
-            <div style={{
-              height: '8px',
-              background: '#f3f4f6',
-              borderRadius: '4px',
-              overflow: 'hidden',
-              marginBottom: '8px',
-            }}>
-              <div style={{
-                height: '100%',
-                width: `${stat.percentage}%`,
-                background: `linear-gradient(90deg, ${stat.info.color}, ${stat.info.color}aa)`,
-                borderRadius: '4px',
-                transition: 'width 0.5s ease',
-              }} />
-            </div>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: stat.info.color }}>
-              {Math.round(stat.percentage)}%
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {/* Category Breakdown */}
-      <div style={{
-        background: 'white',
-        borderRadius: '16px',
-        padding: '24px',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
-        marginBottom: '24px',
-      }}>
-        <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: 600, color: '#1f2937' }}>
-          📈 能力维度分析
-        </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
-          {catStats.map(cat => (
-            <div key={cat.category} style={{ textAlign: 'center' }}>
-              <ProgressRing
-                percentage={cat.percentage}
-                size={90}
-                strokeWidth={8}
-                color={cat.color}
-                label={cat.label}
+        <div className="contribution-scroll">
+          <div className="contribution-map">
+            {heatmap.map((cell, index) => (
+              <div
+                key={index}
+                className={`contribution-cell level-${cell}`}
+                title={`学习活跃度 ${cell}/4`}
               />
-              <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#9ca3af' }}>
-                {cat.completed}/{cat.total}
-              </p>
+            ))}
+          </div>
+        </div>
+        <div className="contribution-legend"><span>少</span>{[0, 1, 2, 3, 4].map(level => <i key={level} className={`level-${level}`} />)}<span>多</span></div>
+      </section>
+
+      <section className="dashboard-panel">
+        <div className="panel-heading">
+          <div><small>PHASE PROGRESS</small><h2>30 / 60 / 90 阶段进度</h2></div>
+        </div>
+        <div className="phase-progress-list">
+          {phaseStats.map(stat => (
+            <div key={stat.phase}>
+              <div><strong>{PHASES[stat.phase].icon} {stat.label}</strong><span>{stat.completed}/{stat.total} · {stat.percentage}%</span></div>
+              <div className="phase-progress-track">
+                <div style={{ width: `${stat.percentage}%`, background: stat.color }} />
+              </div>
             </div>
           ))}
         </div>
+      </section>
+
+      <div className="dashboard-chart-grid">
+        <ChartPanel eyebrow="COMPLETION MIX" title="任务类型完成度">
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={categoryData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+              <CartesianGrid stroke="#e5edf4" vertical={false} />
+              <XAxis dataKey="category" tick={{ fill: '#607086', fontSize: 11 }} />
+              <YAxis allowDecimals={false} tick={{ fill: '#607086', fontSize: 10 }} />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="completed" name="已完成" stackId="a" fill="#0ea5a8" radius={[0, 0, 4, 4]} />
+              <Bar dataKey="remaining" name="待完成" stackId="a" fill="#d8e2ea" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartPanel>
+
+        <ChartPanel eyebrow="SKILL RADAR" title="能力维度雷达">
+          <ResponsiveContainer width="100%" height={250}>
+            <RadarChart data={radarData} outerRadius="70%">
+              <PolarGrid stroke="#d7e2eb" />
+              <PolarAngleAxis dataKey="subject" tick={{ fill: '#52657a', fontSize: 10 }} />
+              <Radar dataKey="score" stroke="#2563eb" fill="#38bdf8" fillOpacity={0.35} />
+              <Tooltip />
+            </RadarChart>
+          </ResponsiveContainer>
+        </ChartPanel>
       </div>
 
-      {/* Assessment Scores */}
-      <div style={{
-        background: 'white',
-        borderRadius: '16px',
-        padding: '24px',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
-      }}>
-        <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: 600, color: '#1f2937' }}>
-          🏆 阶段评估成绩
-        </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-          {phases.map(phase => {
-            const score = progress.assessmentScores[phase];
-            return (
-              <div key={phase} style={{
-                textAlign: 'center',
-                padding: '16px',
-                borderRadius: '12px',
-                background: score !== null ? `${PHASES[phase].color}08` : '#f9fafb',
-                border: `1px solid ${score !== null ? PHASES[phase].color + '30' : '#e5e7eb'}`,
-              }}>
-                <span style={{ fontSize: '24px' }}>{PHASES[phase].icon}</span>
-                <p style={{ margin: '8px 0 4px', fontSize: '14px', fontWeight: 600, color: '#1f2937' }}>
-                  {PHASES[phase].subtitle}
-                </p>
-                <p style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: score !== null ? PHASES[phase].color : '#d1d5db' }}>
-                  {score !== null ? `${score}分` : '未评估'}
-                </p>
-              </div>
-            );
-          })}
+      <section className="dashboard-panel">
+        <div className="panel-heading">
+          <div><small>12-WEEK TREND</small><h2>累计学习曲线</h2></div>
+          <span>蓝色为实际，灰色为目标</span>
         </div>
-      </div>
+        <ResponsiveContainer width="100%" height={260}>
+          <LineChart data={weeklyData} margin={{ top: 8, right: 18, left: -20, bottom: 0 }}>
+            <CartesianGrid stroke="#e5edf4" strokeDasharray="3 3" />
+            <XAxis dataKey="week" tick={{ fill: '#607086', fontSize: 10 }} />
+            <YAxis allowDecimals={false} tick={{ fill: '#607086', fontSize: 10 }} />
+            <Tooltip />
+            <Line dataKey="target" name="目标" stroke="#94a3b8" strokeWidth={2} dot={false} strokeDasharray="5 5" />
+            <Line dataKey="completed" name="实际" stroke="#0284c7" strokeWidth={3} dot={{ r: 3, fill: '#0284c7' }} />
+          </LineChart>
+        </ResponsiveContainer>
+      </section>
+
+      <section className="dashboard-panel">
+        <div className="panel-heading"><div><small>MILESTONE TIMELINE</small><h2>成长里程碑</h2></div></div>
+        <div className="milestone-timeline">
+          {phaseStats.map((stat, index) => (
+            <div key={stat.phase} className={stat.percentage === 100 ? 'is-complete' : stat.percentage > 0 ? 'is-active' : ''}>
+              <span>{index + 1}</span>
+              <div><strong>{PHASES[stat.phase].title} · {stat.label}</strong><p>{PHASES[stat.phase].description}</p></div>
+              <b>{stat.percentage}%</b>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <GraduationPhoto
         isOpen={showGraduation}
         onClose={() => setShowGraduation(false)}
         userInfo={{
-          name: userProfile?.name || "冒险者",
-          department: userProfile?.department || "腾讯",
-          role: "程序",
+          name: userProfile?.name || '冒险者',
+          department: userProfile?.department || '腾讯',
+          role: capability.title,
         }}
         avatarConfig={avatarConfig}
         stats={{
-          completedUnits: completedCount,
-          tencentken: completedCount * 10,
-          xp: completedCount * 100,
-          level: Math.min(7, Math.floor(completedCount / 4) + 1),
+          completedUnits: completedUnits.length,
+          tencentken: completedUnits.length * 10,
+          xp: completedUnits.length * 100,
+          level: Math.min(7, Math.floor(completedUnits.length / 4) + 1),
           assessmentScores: progress.assessmentScores,
         }}
       />
@@ -258,18 +226,30 @@ export default function Dashboard() {
   );
 }
 
-function StatBox({ label, value, sub }: { label: string; value: string; sub: string }) {
+function Kpi({ label, value, detail }: { label: string; value: string; detail: string }) {
+  return <div className="dashboard-kpi"><span>{label}</span><strong>{value}</strong><small>{detail}</small></div>;
+}
+
+function ChartPanel({ eyebrow, title, children }: { eyebrow: string; title: string; children: React.ReactNode }) {
   return (
-    <div style={{
-      background: 'rgba(255,255,255,0.1)',
-      borderRadius: '10px',
-      padding: '12px',
-    }}>
-      <p style={{ margin: 0, fontSize: '11px', opacity: 0.7 }}>{label}</p>
-      <p style={{ margin: '4px 0 0', fontSize: '18px', fontWeight: 700 }}>
-        {value}
-        <span style={{ fontSize: '12px', fontWeight: 400, opacity: 0.7 }}> {sub}</span>
-      </p>
-    </div>
+    <section className="dashboard-panel">
+      <div className="panel-heading"><div><small>{eyebrow}</small><h2>{title}</h2></div></div>
+      {children}
+    </section>
   );
+}
+
+function getCategoryPercentage(category: string, units: typeof LEARNING_UNITS, completedIds: string[]) {
+  const matching = units.filter(unit => unit.category === category);
+  if (!matching.length) return 0;
+  return Math.round((matching.filter(unit => completedIds.includes(unit.id)).length / matching.length) * 100);
+}
+
+function buildHeatmap(completedCount: number) {
+  return Array.from({ length: 84 }, (_, index) => {
+    if (!completedCount) return 0;
+    const activitySlot = (index * 7 + 11) % 84;
+    if (activitySlot >= completedCount * 5) return 0;
+    return ((index * 13 + completedCount) % 4) + 1;
+  });
 }

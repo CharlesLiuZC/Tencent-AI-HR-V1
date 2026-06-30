@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { CAPABILITIES } from '../data/learningPaths';
-import { getLevel, getLevelProgress, getNextLevel } from '../data/gamification';
+import { getLevel, getLevelProgress, getTencentkenBalance } from '../data/gamification';
 import PenguinMentor from './PenguinMentor';
 import TencentkenShop from './TencentkenShop';
 import BigGooseForum from './BigGooseForum';
@@ -22,10 +22,7 @@ export default function Header() {
     (progress.assessmentScores.day90 !== null ? 500 : 0);
   const level = getLevel(xp);
   const levelProgress = getLevelProgress(xp);
-  const tencentken = progress.completedUnits.length * 10 +
-    (progress.assessmentScores.day30 !== null ? 50 : 0) +
-    (progress.assessmentScores.day60 !== null ? 80 : 0) +
-    (progress.assessmentScores.day90 !== null ? 120 : 0);
+  const tencentken = getTencentkenBalance(progress);
 
   const navItems = [
     { path: '/', label: '学习路径', icon: '🗺️' },

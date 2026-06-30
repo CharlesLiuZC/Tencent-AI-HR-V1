@@ -11,9 +11,9 @@ interface Props {
 }
 
 const CATEGORY_COLORS: Record<string, { bg: string; text: string; label: string }> = {
-  theory: { bg: '#dbeafe', text: '#1e40af', label: '理论' },
+  knowledge: { bg: '#dbeafe', text: '#1e40af', label: '知识' },
   practice: { bg: '#dcfce7', text: '#166534', label: '实战' },
-  project: { bg: '#fef3c7', text: '#92400e', label: '项目' },
+  challenge: { bg: '#fef3c7', text: '#92400e', label: '挑战' },
   sharing: { bg: '#f3e8ff', text: '#6b21a8', label: '分享' },
 };
 
@@ -23,12 +23,12 @@ const DIFFICULTY_STARS: Record<number, string> = {
   3: '⭐⭐⭐',
 };
 
-export default function UnitCard({ unit, index }: Props) {
+export default function UnitCard({ unit }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const { role, progress, toggleUnit } = useApp();
   const isCompleted = progress.completedUnits.includes(unit.id);
-  const cat = CATEGORY_COLORS[unit.category] || CATEGORY_COLORS.theory;
+  const cat = CATEGORY_COLORS[unit.category] || CATEGORY_COLORS.knowledge;
 
   return (
     <div
@@ -59,6 +59,7 @@ export default function UnitCard({ unit, index }: Props) {
       >
         {/* Completion checkbox */}
         <button
+          aria-label={isCompleted ? `取消完成：${unit.title}` : `标记完成：${unit.title}`}
           onClick={(e) => {
             e.stopPropagation();
             if (!isCompleted) setShowFeedback(true);
@@ -105,7 +106,7 @@ export default function UnitCard({ unit, index }: Props) {
             <span style={{ fontSize: '11px', color: '#9ca3af' }}>
               {unit.duration} 分钟
             </span>
-            {unit.roles.length > 0 && unit.roles.map(r => (
+            {unit.roles && unit.roles.length > 0 && unit.roles.map(r => (
               <span key={r} style={{ fontSize: '11px', background: '#f3f4f6', padding: '1px 6px', borderRadius: '8px' }}>
                 {r === 'art' ? '🎨美术' : r === 'design' ? '📝策划' : r === 'dev' ? '💻程序' : '📊运营'}
               </span>
@@ -219,6 +220,21 @@ export default function UnitCard({ unit, index }: Props) {
                   </span>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Knowledge Gene Panel - 前人智慧 */}
+          {unit.deliverable && (
+            <div style={{
+              marginTop: '14px',
+              padding: '12px',
+              color: '#7c2d12',
+              background: '#fff7ed',
+              border: '1px solid #fed7aa',
+              borderRadius: '6px',
+              fontSize: '12px',
+            }}>
+              <strong>📦 阶段交付物：</strong>{unit.deliverable}
             </div>
           )}
 

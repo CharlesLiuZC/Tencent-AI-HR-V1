@@ -11,8 +11,8 @@ export type Capability =
   | 'ai-agent'      // AI Agent：构建自主执行的智能体
   | 'ai-research';  // AI研究：前沿论文/模型训练/SFT
 
-// 兼容旧代码的别名
-export type Role = Capability;
+export type LegacyRole = 'art' | 'design' | 'dev' | 'ops';
+export type Role = Capability | LegacyRole;
 
 // 能力方向信息
 export interface CapabilityInfo {
@@ -24,6 +24,7 @@ export interface CapabilityInfo {
   color: string;
   realProjectExample: string; // 90天终极挑战示例
   tencentTools: string[];     // 推荐的腾讯工具
+  coreTools: string[];        // 方向专属核心工具链
   entryLevel: 'beginner' | 'intermediate' | 'advanced';
 }
 
@@ -32,6 +33,14 @@ export type Phase = 'day30' | 'day60' | 'day90';
 
 // 学习单元分类
 export type UnitCategory = 'knowledge' | 'practice' | 'challenge' | 'sharing';
+
+export interface DailyLesson {
+  day: number;
+  title: string;
+  description: string;
+  duration: number;
+  task: string;
+}
 
 // 学习单元（重新设计）
 export interface LearningUnit {
@@ -49,6 +58,8 @@ export interface LearningUnit {
   week: number;
   isRealChallenge: boolean;    // 是否为真实挑战任务
   deliverable?: string;        // 交付物描述（挑战任务必填）
+  roles?: LegacyRole[];        // 兼容历史数据
+  dailyPlan: DailyLesson[];    // 阶段筛选时展示的每日学习内容
 }
 
 // 学习进度
@@ -59,6 +70,8 @@ export interface UserProgress {
   startDate: string;
   lastActiveDate: string;
   selectedCapability: Capability | null;
+  spentTencentken: number;
+  redeemedRewards: string[];
 }
 
 // AI 工具
@@ -69,7 +82,7 @@ export interface AITool {
   description: string;
   difficulty: 1 | 2 | 3 | 4 | 5;
   useCases: string[];
-  capabilities: Capability[];
+  capabilities: Role[];
   phases: Phase[];
   url: string;
 }
@@ -78,9 +91,9 @@ export interface AITool {
 export interface AssessmentQuestion {
   id: string;
   phase: Phase;
-  capability: Capability | 'all';
+  capability?: Capability | 'all';
   question: string;
-  type: 'choice' | 'open' | 'challenge';
+  type?: 'choice' | 'open' | 'challenge';
   options?: string[];
   correctIndex?: number;
   challengePrompt?: string;   // 挑战题的Prompt
@@ -99,6 +112,7 @@ export interface PhaseInfo {
   duration: string;
   color: string;
   icon: string;
+  goals: string[];
 }
 
 // 论坛帖子

@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import { TENCENTKEN_REWARDS, getRarityColor } from '../data/gamification';
+import {
+  TENCENTKEN_REWARDS,
+  TencentkenReward,
+  getEarnedTencentken,
+  getRarityColor,
+  getTencentkenBalance,
+} from '../data/gamification';
 import { useApp } from '../context/AppContext';
 
 interface Props {
@@ -7,176 +13,177 @@ interface Props {
   onClose: () => void;
 }
 
+const CATEGORIES = [
+  { key: 'all', label: '全部奖励', icon: '🏪' },
+  { key: 'token', label: '算力补给', icon: '⚡' },
+  { key: 'snack', label: '能量补给', icon: '☕' },
+  { key: 'gift', label: '限定周边', icon: '🎁' },
+  { key: 'privilege', label: '成长特权', icon: '⭐' },
+];
+
+const RARITY_LABELS: Record<TencentkenReward['rarity'], string> = {
+  common: '普通',
+  rare: '稀有',
+  epic: '史诗',
+  legendary: '传说',
+};
+
 export default function TencentkenShop({ isOpen, onClose }: Props) {
-  const { progress } = useApp();
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [redeemed, setRedeemed] = useState<string[]>([]);
+  const { progress, redeemReward } = useApp();
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [pendingReward, setPendingReward] = useState<TencentkenReward | null>(null);
+  const [successReward, setSuccessReward] = useState<TencentkenReward | null>(null);
 
-  // Calculate total Tencentken (from XP)
-  const totalTk = progress.completedUnits.length * 10 +
-    (progress.assessmentScores.day30 !== null ? 50 : 0) +
-    (progress.assessmentScores.day60 !== null ? 80 : 0) +
-    (progress.assessmentScores.day90 !== null ? 120 : 0);
-
-  const categories = [
-    { key: 'all', label: '全部', icon: '🏪' },
-    { key: 'token', label: 'Token', icon: '🪙' },
-    { key: 'snack', label: '零食', icon: '🍪' },
-    { key: 'gift', label: '周边', icon: '🎁' },
-    { key: 'privilege', label: '特权', icon: '⭐' },
-  ];
-
+  const earned = getEarnedTencentken(progress);
+  const balance = getTencentkenBalance(progress);
+  const spent = progress.spentTencentken || 0;
+  const redeemed = progress.redeemedRewards || [];
   const filteredRewards = selectedCategory === 'all'
     ? TENCENTKEN_REWARDS
-    : TENCENTKEN_REWARDS.filter(r => r.category === selectedCategory);
+    : TENCENTKEN_REWARDS.filter(reward => reward.category === selectedCategory);
 
   if (!isOpen) return null;
 
-  return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'rgba(0,0,0,0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-    }}>
-      <div style={{
-        background: 'white',
-        borderRadius: '24px',
-        width: '500px',
-        maxHeight: '80vh',
-        overflow: 'hidden',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-      }}>
-        {/* Header */}
-        <div style={{
-          background: 'linear-gradient(135deg, #12b7f5 0%, #0099e5 100%)',
-          padding: '24px',
-          color: 'white',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-          <div>
-            <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 700 }}>🐧 腾讯币商城</h2>
-            <p style={{ margin: '4px 0 0', fontSize: '12px', opacity: 0.8 }}>
-              用学习赚取的 Tencentken 兑换奖励
-            </p>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <p style={{ margin: 0, fontSize: '24px', fontWeight: 700 }}>🪙 {totalTk}</p>
-            <p style={{ margin: '2px 0 0', fontSize: '11px', opacity: 0.8 }}>我的 Tencentken</p>
-          </div>
-        </div>
+  const closeShop = () => {
+    setPendingReward(null);
+    setSuccessReward(null);
+    onClose();
+  };
 
-        {/* Category tabs */}
-        <div style={{
-          display: 'flex',
-          gap: '4px',
-          padding: '12px 16px',
-          borderBottom: '1px solid #e5e7eb',
-          overflowX: 'auto',
-        }}>
-          {categories.map(cat => (
+  const confirmRedemption = () => {
+    if (!pendingReward) return;
+    if (redeemReward(pendingReward.id, pendingReward.cost)) {
+      setSuccessReward(pendingReward);
+      setPendingReward(null);
+    }
+  };
+
+  return (
+    <div className="tk-shop-backdrop" role="dialog" aria-modal="true" aria-label="Tencentken 商城">
+      <div className="tk-shop-shell">
+        <header className="tk-shop-header">
+          <div className="tk-shop-brand">
+            <div className="tk-shop-logo">🪙</div>
+            <div>
+              <p className="tk-shop-eyebrow">TENCENTKEN REWARD STATION</p>
+              <h2>Tencentken 补给站</h2>
+              <p>把每一次学习胜利，兑换成真实奖励。</p>
+            </div>
+          </div>
+          <button className="tk-icon-button" onClick={closeShop} aria-label="关闭商城">×</button>
+        </header>
+
+        <section className="tk-wallet">
+          <div>
+            <span>可用余额</span>
+            <strong><i>TK</i>{balance}</strong>
+          </div>
+          <div className="tk-wallet-meter">
+            <div>
+              <span>累计获得</span>
+              <b>{earned} TK</b>
+            </div>
+            <div>
+              <span>已兑换</span>
+              <b>{spent} TK</b>
+            </div>
+            <div>
+              <span>收藏进度</span>
+              <b>{redeemed.length}/{TENCENTKEN_REWARDS.length}</b>
+            </div>
+          </div>
+        </section>
+
+        <nav className="tk-category-tabs" aria-label="奖励分类">
+          {CATEGORIES.map(category => (
             <button
-              key={cat.key}
-              onClick={() => setSelectedCategory(cat.key)}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '10px',
-                border: selectedCategory === cat.key ? '2px solid #12b7f5' : '2px solid #e5e7eb',
-                background: selectedCategory === cat.key ? '#f0f9ff' : 'white',
-                color: selectedCategory === cat.key ? '#12b7f5' : '#6b7280',
-                cursor: 'pointer',
-                fontSize: '13px',
-                fontWeight: selectedCategory === cat.key ? 600 : 400,
-                whiteSpace: 'nowrap',
-              }}
+              key={category.key}
+              className={selectedCategory === category.key ? 'is-active' : ''}
+              onClick={() => setSelectedCategory(category.key)}
             >
-              {cat.icon} {cat.label}
+              <span>{category.icon}</span>{category.label}
             </button>
           ))}
-        </div>
+        </nav>
 
-        {/* Rewards grid */}
-        <div style={{
-          padding: '16px',
-          maxHeight: '400px',
-          overflowY: 'auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '12px',
-        }}>
+        <main className="tk-reward-grid">
           {filteredRewards.map(reward => {
-            const canAfford = totalTk >= reward.cost;
             const isRedeemed = redeemed.includes(reward.id);
+            const canAfford = balance >= reward.cost;
+            const rarityColor = getRarityColor(reward.rarity);
             return (
-              <div key={reward.id} style={{
-                borderRadius: '16px',
-                padding: '16px',
-                border: isRedeemed ? '2px solid #22c55e' : canAfford ? '2px solid #12b7f5' : '2px solid #e5e7eb',
-                background: isRedeemed ? '#f0fdf4' : 'white',
-                opacity: isRedeemed ? 0.7 : 1,
-                transition: 'all 0.2s',
-              }}>
-                <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '36px' }}>{reward.icon}</span>
+              <article
+                key={reward.id}
+                className={`tk-reward-card ${isRedeemed ? 'is-redeemed' : ''}`}
+                style={{ '--rarity-color': rarityColor } as React.CSSProperties}
+              >
+                <div className="tk-reward-topline">
+                  <span className="tk-rarity">{RARITY_LABELS[reward.rarity]}</span>
+                  <span className="tk-stock">库存 {Math.max(0, reward.stock - (isRedeemed ? 1 : 0))}</span>
                 </div>
-                <h4 style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: 600, textAlign: 'center' }}>
-                  {reward.name}
-                </h4>
-                <p style={{ margin: '0 0 8px', fontSize: '11px', color: '#6b7280', textAlign: 'center' }}>
-                  {reward.description}
-                </p>
+                <div className="tk-reward-visual">
+                  <span>{reward.icon}</span>
+                  {reward.rarity === 'legendary' && <em>LEGENDARY</em>}
+                </div>
+                <div className="tk-reward-copy">
+                  <small>{reward.badge}</small>
+                  <h3>{reward.name}</h3>
+                  <p>{reward.description}</p>
+                </div>
                 <button
-                  onClick={() => {
-                    if (canAfford && !isRedeemed) {
-                      setRedeemed(prev => [...prev, reward.id]);
-                    }
-                  }}
-                  disabled={!canAfford || isRedeemed}
-                  style={{
-                    width: '100%',
-                    padding: '8px',
-                    borderRadius: '10px',
-                    border: 'none',
-                    background: isRedeemed ? '#22c55e' : canAfford ? 'linear-gradient(135deg, #12b7f5, #0099e5)' : '#e5e7eb',
-                    color: isRedeemed || canAfford ? 'white' : '#9ca3af',
-                    cursor: canAfford && !isRedeemed ? 'pointer' : 'not-allowed',
-                    fontSize: '13px',
-                    fontWeight: 600,
-                  }}
+                  className="tk-redeem-button"
+                  disabled={isRedeemed || !canAfford}
+                  onClick={() => setPendingReward(reward)}
                 >
-                  {isRedeemed ? '✅ 已兑换' : `🪙 ${reward.cost} TK`}
+                  {isRedeemed ? (
+                    <>✓ 已收入背包</>
+                  ) : canAfford ? (
+                    <><span>🪙</span> {reward.cost} TK · 立即兑换</>
+                  ) : (
+                    <>还差 {reward.cost - balance} TK</>
+                  )}
                 </button>
-              </div>
+              </article>
             );
           })}
-        </div>
-
-        {/* Close */}
-        <div style={{ padding: '12px 16px', borderTop: '1px solid #e5e7eb', textAlign: 'center' }}>
-          <button
-            onClick={onClose}
-            style={{
-              padding: '10px 32px',
-              borderRadius: '12px',
-              border: '1px solid #e5e7eb',
-              background: 'white',
-              cursor: 'pointer',
-              fontSize: '14px',
-              color: '#374151',
-            }}
-          >
-            关闭
-          </button>
-        </div>
+        </main>
       </div>
+
+      {pendingReward && (
+        <div className="tk-confirm-layer">
+          <div className="tk-confirm-card">
+            <button className="tk-icon-button tk-confirm-close" onClick={() => setPendingReward(null)} aria-label="取消兑换">×</button>
+            <div className="tk-confirm-icon">{pendingReward.icon}</div>
+            <p className="tk-shop-eyebrow">REDEMPTION CHECK</p>
+            <h3>确认兑换「{pendingReward.name}」？</h3>
+            <p>将从你的账户扣除 <strong>{pendingReward.cost} TK</strong>，兑换后余额为 <strong>{balance - pendingReward.cost} TK</strong>。</p>
+            <div className="tk-confirm-actions">
+              <button onClick={() => setPendingReward(null)}>再想想</button>
+              <button onClick={confirmRedemption}>确认兑换</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {successReward && (
+        <div className="tk-success-layer">
+          <div className="tk-coin-burst" aria-hidden="true">
+            {Array.from({ length: 18 }, (_, index) => (
+              <span key={index} style={{ '--coin-index': index } as React.CSSProperties}>●</span>
+            ))}
+          </div>
+          <div className="tk-success-card">
+            <p className="tk-shop-eyebrow">REWARD UNLOCKED</p>
+            <div className="tk-success-box">
+              <div>{successReward.icon}</div>
+            </div>
+            <h3>兑换成功</h3>
+            <p>「{successReward.name}」已收入奖励背包</p>
+            <strong>- {successReward.cost} TK</strong>
+            <button onClick={() => setSuccessReward(null)}>继续逛逛</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

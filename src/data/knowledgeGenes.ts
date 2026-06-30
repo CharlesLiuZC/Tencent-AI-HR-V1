@@ -430,8 +430,8 @@ export function getMatchingGenes(context: {
 }): KnowledgeGene[] {
   return KNOWLEDGE_GENES.filter(gene => {
     // 按角色过滤
-    if (context.role && gene.applicable.roles !== 'all') {
-      if (!gene.applicable.roles.includes(context.role)) return false;
+    if (context.role && gene.applicable.capabilities !== 'all') {
+      if (!gene.applicable.capabilities.includes(context.role)) return false;
     }
     // 按阶段过滤
     if (context.phase) {
