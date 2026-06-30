@@ -10,7 +10,7 @@ interface Props {
 
 export default function PathTimeline({ role, activePhase }: Props) {
   const phases: Phase[] = ['day30', 'day60', 'day90'];
-  const capability = CAPABILITIES[role];
+  const capability = CAPABILITIES[role] || CAPABILITIES['ai-image'];
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto' }}>

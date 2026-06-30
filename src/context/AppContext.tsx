@@ -55,33 +55,71 @@ const DEFAULT_AVATAR: AvatarConfig = {
 
 const AppContext = createContext<AppState | undefined>(undefined);
 
+const VALID_CAPABILITIES: Capability[] = [
+  'ai-image',
+  'ai-video',
+  'ai-writing',
+  'ai-code',
+  'ai-agent',
+  'ai-research',
+];
+
+const LEGACY_ROLE_MAP: Record<string, Capability> = {
+  art: 'ai-image',
+  design: 'ai-image',
+  dev: 'ai-code',
+  ops: 'ai-writing',
+};
+
+function normalizeCapability(value: unknown): Capability {
+  if (typeof value === 'string' && VALID_CAPABILITIES.includes(value as Capability)) {
+    return value as Capability;
+  }
+  return typeof value === 'string' ? LEGACY_ROLE_MAP[value] || 'ai-image' : 'ai-image';
+}
+
+function readStoredJson<T>(key: string): T | null {
+  const saved = localStorage.getItem(key);
+  if (!saved) return null;
+
+  try {
+    return JSON.parse(saved) as T;
+  } catch {
+    localStorage.removeItem(key);
+    return null;
+  }
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<Capability>(() => {
-    const saved = localStorage.getItem('gd-role');
-    return (saved as Capability) || 'ai-image';
+    return normalizeCapability(localStorage.getItem('gd-role'));
   });
 
   const [progress, setProgress] = useState<UserProgress>(() => {
-    const saved = localStorage.getItem('gd-progress');
-    if (!saved) return DEFAULT_PROGRESS;
-    const parsed = JSON.parse(saved) as Partial<UserProgress>;
+    const parsed = readStoredJson<Partial<UserProgress>>('gd-progress');
+    if (!parsed) return DEFAULT_PROGRESS;
+    const currentPhase: Phase = ['day30', 'day60', 'day90'].includes(String(parsed.currentPhase))
+      ? parsed.currentPhase as Phase
+      : 'day30';
     return {
       ...DEFAULT_PROGRESS,
       ...parsed,
+      completedUnits: Array.isArray(parsed.completedUnits) ? parsed.completedUnits : [],
+      currentPhase,
       assessmentScores: { ...DEFAULT_PROGRESS.assessmentScores, ...parsed.assessmentScores },
       spentTencentken: parsed.spentTencentken || 0,
-      redeemedRewards: parsed.redeemedRewards || [],
+      redeemedRewards: Array.isArray(parsed.redeemedRewards) ? parsed.redeemedRewards : [],
     };
   });
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
-    const saved = localStorage.getItem('gd-profile');
-    return saved ? JSON.parse(saved) : null;
+    const saved = readStoredJson<UserProfile>('gd-profile');
+    return saved ? { ...saved, role: normalizeCapability(saved.role) } : null;
   });
 
   const [avatarConfig, setAvatarConfig] = useState<AvatarConfig>(() => {
-    const saved = localStorage.getItem('gd-avatar');
-    return saved ? JSON.parse(saved) : DEFAULT_AVATAR;
+    const saved = readStoredJson<Partial<AvatarConfig>>('gd-avatar');
+    return saved ? { ...DEFAULT_AVATAR, ...saved } : DEFAULT_AVATAR;
   });
 
   useEffect(() => { localStorage.setItem('gd-role', role); }, [role]);

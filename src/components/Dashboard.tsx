@@ -31,7 +31,7 @@ const CATEGORY_META = {
 export default function Dashboard() {
   const { role, progress, userProfile, avatarConfig } = useApp();
   const [showGraduation, setShowGraduation] = useState(false);
-  const capability = CAPABILITIES[role];
+  const capability = CAPABILITIES[role] || CAPABILITIES['ai-image'];
   const units = LEARNING_UNITS.filter(unit => unit.capabilities.includes(role));
   const completedUnits = units.filter(unit => progress.completedUnits.includes(unit.id));
   const totalMinutes = units.reduce((sum, unit) => sum + unit.duration, 0);

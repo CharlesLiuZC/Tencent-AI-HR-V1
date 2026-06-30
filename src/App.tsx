@@ -6,7 +6,55 @@ import DashboardPage from './pages/DashboardPage';
 import AssessPage from './pages/AssessPage';
 import OnboardingWizard from './components/OnboardingWizard';
 import PenguinCompanion from './components/PenguinCompanion';
-import { useState } from 'react';
+import { Component, type ErrorInfo, type ReactNode, useState } from 'react';
+
+class AppErrorBoundary extends Component<
+  { children: ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error('Application render failed', error, info);
+  }
+
+  private resetLocalData = () => {
+    ['gd-role', 'gd-progress', 'gd-profile', 'gd-avatar'].forEach(key => localStorage.removeItem(key));
+    window.location.reload();
+  };
+
+  render() {
+    if (!this.state.hasError) return this.props.children;
+
+    return (
+      <main style={{
+        minHeight: '100vh',
+        display: 'grid',
+        placeItems: 'center',
+        padding: '24px',
+        background: '#f3f7fb',
+        color: '#172033',
+      }}>
+        <section style={{ maxWidth: '460px', padding: '32px', background: 'white', border: '1px solid #dbe5ee', borderRadius: '8px' }}>
+          <h1 style={{ margin: '0 0 12px', fontSize: '22px' }}>成长副本需要恢复本地数据</h1>
+          <p style={{ margin: '0 0 20px', color: '#64748b', lineHeight: 1.7 }}>
+            检测到旧版本缓存与当前数据结构不兼容。恢复后可以重新进入应用，学习内容不会影响线上版本。
+          </p>
+          <button
+            onClick={this.resetLocalData}
+            style={{ padding: '10px 16px', border: 0, borderRadius: '6px', color: 'white', background: '#0284c7', cursor: 'pointer', fontWeight: 700 }}
+          >
+            恢复并重新进入
+          </button>
+        </section>
+      </main>
+    );
+  }
+}
 
 function AppContent() {
   const { userProfile } = useApp();
@@ -50,10 +98,12 @@ function AppContent() {
 
 export default function App() {
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
-      <AppProvider>
-        <AppContent />
-      </AppProvider>
-    </BrowserRouter>
+    <AppErrorBoundary>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <AppProvider>
+          <AppContent />
+        </AppProvider>
+      </BrowserRouter>
+    </AppErrorBoundary>
   );
 }
