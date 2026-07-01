@@ -27,9 +27,10 @@ export default function Header() {
   const navItems = [
     { path: '/', label: '学习路径', icon: '🗺️' },
     { path: '/dashboard', label: '进度仪表盘', icon: '📊' },
+    { path: '/diagnosis', label: 'AI 诊断', icon: '🧭' },
     { path: '/assess/day30', label: 'AI 对战', icon: '⚔️' },
     { action: () => setShowForum(true), label: '大鹅论坛', icon: '🪿' },
-    { action: () => setShowLeader(true), label: 'Leader看板', icon: '📋' },
+    { path: '/hr-console', label: 'HR 看板', icon: '📋' },
   ];
 
   return (

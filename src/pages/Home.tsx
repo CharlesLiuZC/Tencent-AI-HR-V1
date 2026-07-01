@@ -6,6 +6,8 @@ import ToolRecom from '../components/ToolRecom';
 import InnovationPath from '../components/InnovationPath';
 import PenguinGame from '../components/PenguinGame';
 import { Phase } from '../types';
+import PersonalizedPlan from '../components/PersonalizedPlan';
+import { Link } from 'react-router-dom';
 
 export default function Home() {
   const { role, progress } = useApp();
@@ -66,8 +68,8 @@ export default function Home() {
             </div>
           </div>
 
-          <p style={{ margin: '0 0 24px', fontSize: '15px', lineHeight: '1.6', opacity: 0.9, maxWidth: '600px' }}>
-            欢迎加入腾讯！这是你的成长副本 — 和 AI 组队，90 天完成从新手到 AI 先锋的蜕变。每一次学习都赚取 Tencentken，每一次挑战都是升级。
+          <p style={{ margin: '0 0 24px', fontSize: '15px', lineHeight: '1.6', opacity: 0.9, maxWidth: '680px' }}>
+            面向 AI Native 游戏组织的新人成长 Agent。它会诊断能力、生成路径、陪伴学习、评估作品，并把个人成长反馈给组织，而不是一张静态培训表。
           </p>
 
           {/* Role badge */}
@@ -105,9 +107,29 @@ export default function Home() {
             >
               🎮 开始冒险
             </button>
+            <Link to="/diagnosis" style={{
+              padding: '10px 20px', borderRadius: '10px',
+              border: '2px solid rgba(255,255,255,.75)', color: 'white',
+              fontSize: '14px', fontWeight: 700,
+            }}>重新进行 AI 诊断</Link>
           </div>
         </div>
       </div>
+
+      <section className="ai-native-loop">
+        {[
+          ['01', '能力诊断', '识别工具、思维、岗位适配、安全与工作流能力'],
+          ['02', '路径生成', '结合画像、弱项和节奏生成个人 30-60-90 副本'],
+          ['03', '学习陪伴', '每日任务、QQ 鹅仔反馈与停滞风险提醒'],
+          ['04', 'Boss 评估', '知识测试、岗位对话与作品制限时挑战'],
+          ['05', '动态迭代', '测评低分插入补强，进度停滞自动降载'],
+          ['06', 'HR 洞察', '岗位差距、课程效果、风险新人和 Champion 候选'],
+        ].map(([number, title, text]) => (
+          <div key={number}><span>{number}</span><b>{title}</b><p>{text}</p></div>
+        ))}
+      </section>
+
+      <PersonalizedPlan />
 
       {/* Innovation Path - Personal Journey */}
       <InnovationPath />

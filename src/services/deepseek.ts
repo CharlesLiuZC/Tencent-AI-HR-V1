@@ -1,5 +1,8 @@
 // DeepSeek API 服务 - API Key 仅由本地 Vite 服务端代理读取，不进入浏览器 bundle。
-const API_BASE = '/api/deepseek';
+const configuredApiBase = import.meta.env.VITE_API_BASE?.replace(/\/$/, '');
+const API_BASE = configuredApiBase
+  ? `${configuredApiBase}/deepseek`
+  : '/api/deepseek';
 
 import { retrieveKnowledge, RAG_KNOWLEDGE_BASE } from '../data/ragKnowledge';
 

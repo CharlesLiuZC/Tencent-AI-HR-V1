@@ -100,6 +100,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: Props) {
   const [avatarConfigState, setAvatarConfigState] = useState<AvatarConfig>(DEFAULT_AVATAR);
   const [showAvatarEditor, setShowAvatarEditor] = useState(false);
   const [diagnosedProfile, setDiagnosedProfile] = useState<any>(null);
+  const [diagnosisRound, setDiagnosisRound] = useState(1);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages]);
@@ -153,16 +154,33 @@ export default function OnboardingWizard({ isOpen, onComplete }: Props) {
       if (diagnosis) {
         setDiagnosedProfile(diagnosis);
         setTimeout(() => finishOnboarding(diagnosis), 2000);
+      } else {
+        setDiagnosisRound(round => round + 1);
       }
     } else {
-      // 离线模式：根据用户回答智能生成诊断
-      const offlineDiagnosis = generateOfflineDiagnosis(msg, selectedCapability);
-      setChatMessages(prev => [...prev, {
-        role: 'assistant',
-        content: offlineDiagnosis.message,
-      }]);
-      setDiagnosedProfile(offlineDiagnosis.profile);
-      setTimeout(() => finishOnboarding(offlineDiagnosis.profile), 2000);
+      const offlineQuestions = [
+        '请说一个你最希望 AI 帮你解决的真实岗位任务。你会如何判断结果是否可用？',
+        '如果 AI 输出看起来很专业，但没有来源或可能涉及公司敏感信息，你会怎么处理？',
+      ];
+      if (diagnosisRound < 3) {
+        setChatMessages(prev => [...prev, {
+          role: 'assistant',
+          content: `收到，我再深入了解一下。\n\n${offlineQuestions[diagnosisRound - 1]}`,
+        }]);
+        setDiagnosisRound(round => round + 1);
+      } else {
+        const allAnswers = [...chatMessages, { role: 'user', content: msg }]
+          .filter(item => item.role === 'user')
+          .map(item => item.content)
+          .join(' ');
+        const offlineDiagnosis = generateOfflineDiagnosis(allAnswers, selectedCapability);
+        setChatMessages(prev => [...prev, {
+          role: 'assistant',
+          content: `${offlineDiagnosis.message}\n\n诊断已完成，我正在生成你的个性化 30-60-90 路径。`,
+        }]);
+        setDiagnosedProfile(offlineDiagnosis.profile);
+        setTimeout(() => finishOnboarding(offlineDiagnosis.profile), 1600);
+      }
     }
     setIsTyping(false);
   };
@@ -326,7 +344,7 @@ export default function OnboardingWizard({ isOpen, onComplete }: Props) {
               <span style={{ fontSize: '28px' }}>🐧</span>
               <div>
                 <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>AI 导师诊断中</h3>
-                <p style={{ margin: '2px 0 0', fontSize: '11px', opacity: 0.8 }}>Step 3/4 — 了解你的 AI 掌握程度</p>
+                <p style={{ margin: '2px 0 0', fontSize: '11px', opacity: 0.8 }}>Step 3/4 — 五维能力诊断 · 第 {diagnosisRound}/3 轮</p>
               </div>
             </div>
 

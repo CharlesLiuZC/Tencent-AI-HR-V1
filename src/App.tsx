@@ -4,6 +4,8 @@ import Header from './components/Header';
 import Home from './pages/Home';
 import DashboardPage from './pages/DashboardPage';
 import AssessPage from './pages/AssessPage';
+import DiagnosisPage from './pages/DiagnosisPage';
+import HRConsolePage from './pages/HRConsolePage';
 import OnboardingWizard from './components/OnboardingWizard';
 import PenguinCompanion from './components/PenguinCompanion';
 import { Component, type ErrorInfo, type ReactNode, useState } from 'react';
@@ -76,6 +78,8 @@ function AppContent() {
           <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/assess/:phase" element={<AssessPage />} />
+          <Route path="/diagnosis" element={<DiagnosisPage />} />
+          <Route path="/hr-console" element={<HRConsolePage />} />
         </Routes>
       </main>
 
