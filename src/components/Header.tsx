@@ -7,6 +7,7 @@ import PenguinMentor from './PenguinMentor';
 import TencentkenShop from './TencentkenShop';
 import BigGooseForum from './BigGooseForum';
 import LeaderDashboard from './LeaderDashboard';
+import { getAiRuntimeMode } from '../services/deepseek';
 
 export default function Header() {
   const { role, setRole, progress } = useApp();
@@ -23,6 +24,7 @@ export default function Header() {
   const level = getLevel(xp);
   const levelProgress = getLevelProgress(xp);
   const tencentken = getTencentkenBalance(progress);
+  const aiMode = getAiRuntimeMode();
 
   const navItems = [
     { path: '/', label: '学习路径', icon: '🗺️' },
@@ -57,6 +59,7 @@ export default function Header() {
           </Link>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span className={`ai-runtime-badge ${aiMode.tone}`}>{aiMode.label}</span>
             {/* Level */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: '8px',

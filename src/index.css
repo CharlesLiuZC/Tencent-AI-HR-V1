@@ -437,6 +437,52 @@ button {
   font-size: 11px;
 }
 
+.personalized-plan-inserted {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  color: #075985;
+  background: #e0f2fe;
+  font-size: 11px;
+}
+
+.personalized-unit-priority {
+  position: relative;
+}
+
+.personalized-unit-priority > p,
+.daily-ai-reason {
+  margin: 0 0 6px;
+  padding: 6px 9px;
+  color: #075985;
+  border-left: 3px solid #0ea5e9;
+  background: #eaf7ff;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.ai-runtime-badge {
+  padding: 5px 8px;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.ai-runtime-badge.live {
+  color: #d1fae5;
+  background: rgba(5,150,105,.45);
+}
+
+.ai-runtime-badge.local {
+  color: #cffafe;
+  background: rgba(8,145,178,.45);
+}
+
+.ai-runtime-badge.offline {
+  color: #fef3c7;
+  background: rgba(180,83,9,.5);
+}
+
 @media (max-width: 900px) {
   .ai-native-loop {
     grid-template-columns: repeat(2, 1fr);

@@ -4,6 +4,14 @@ const API_BASE = configuredApiBase
   ? `${configuredApiBase}/deepseek`
   : '/api/deepseek';
 
+export function getAiRuntimeMode(): { label: string; tone: 'live' | 'local' | 'offline' } {
+  if (configuredApiBase) return { label: '真实 AI · Serverless', tone: 'live' };
+  if (typeof window !== 'undefined' && window.location.hostname.endsWith('github.io')) {
+    return { label: '离线演示模式', tone: 'offline' };
+  }
+  return { label: '真实 AI · 本地代理', tone: 'local' };
+}
+
 import { retrieveKnowledge, RAG_KNOWLEDGE_BASE } from '../data/ragKnowledge';
 
 interface ChatMessage {

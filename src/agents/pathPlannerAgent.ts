@@ -6,6 +6,9 @@ export interface PersonalizedPathPlan {
   weeklyMinutes: number;
   orderedUnits: LearningUnit[];
   priorityUnitIds: string[];
+  unitReasons: Record<string, string>;
+  insertedUnits: string[];
+  deprioritizedUnits: string[];
   reasons: string[];
   riskSignals: string[];
   generatedBy: 'ai-rules';
@@ -41,10 +44,33 @@ export function generatePersonalizedPath(
     if (aiLevel >= 4 && unit.phase !== 'day30') score += 20;
     return { unit, score };
   });
-  const priorityUnitIds = [...scored]
-    .sort((left, right) => right.score - left.score)
+  const ranked = [...scored].sort((left, right) => right.score - left.score);
+  const priorityUnitIds = ranked
     .slice(0, 4)
     .map(item => item.unit.id);
+  const phaseOrder = { day30: 0, day60: 1, day90: 2 };
+  const orderedUnits = [...scored]
+    .sort((left, right) =>
+      phaseOrder[left.unit.phase] - phaseOrder[right.unit.phase] ||
+      right.score - left.score,
+    )
+    .map(item => item.unit);
+  const unitReasons = Object.fromEntries(priorityUnitIds.map(id => {
+    const unit = units.find(item => item.id === id);
+    const reason = weaknessTerms.length && unit && matchesAny(unit, weaknessTerms)
+      ? `针对短板：${profile?.weaknesses.join('、')}`
+      : aiLevel >= 4
+        ? '当前水平较高，优先进入工作流与复用能力'
+        : '当前阶段的核心基础任务';
+    return [id, reason];
+  }));
+  const insertedUnits = [
+    ...(profile?.weaknesses.some(item => /安全|隐私|幻觉/.test(item)) ? ['AI 信息安全与幻觉识别'] : []),
+    ...(aiLevel >= 4 ? ['岗位 Agent / RAG 工作流加速任务'] : []),
+  ];
+  const deprioritizedUnits = aiLevel >= 4
+    ? units.filter(unit => unit.phase === 'day30' && matchesAny(unit, FOUNDATION_TERMS)).slice(0, 2).map(unit => unit.id)
+    : [];
 
   const weeklyMinutes = pace === 'slow' ? 150 : pace === 'fast' ? 420 : 300;
   const reasons = [
@@ -60,8 +86,11 @@ export function generatePersonalizedPath(
   return {
     pace,
     weeklyMinutes,
-    orderedUnits: units,
+    orderedUnits,
     priorityUnitIds,
+    unitReasons,
+    insertedUnits,
+    deprioritizedUnits,
     reasons,
     riskSignals,
     generatedBy: 'ai-rules',

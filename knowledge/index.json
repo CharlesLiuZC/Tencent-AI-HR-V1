@@ -1,0 +1,10 @@
+[
+  {"id":"concept-001","file":"ai-native-definition.md","category":"concept","roles":["all"],"phases":["day30"],"tags":["AI Native","组织"]},
+  {"id":"tools-001","file":"tencent-ai-tools.md","category":"tool","roles":["all"],"phases":["day30","day60"],"tags":["腾讯工具","安全"]},
+  {"id":"art-001","file":"game-art-ai-workflow.md","category":"workflow","roles":["ai-image"],"phases":["day60","day90"],"tags":["ControlNet","ComfyUI"]},
+  {"id":"design-001","file":"game-design-ai-workflow.md","category":"workflow","roles":["ai-writing"],"phases":["day60","day90"],"tags":["策划","原型"]},
+  {"id":"code-001","file":"game-programming-ai-workflow.md","category":"workflow","roles":["ai-code"],"phases":["day60","day90"],"tags":["代码审查","测试"]},
+  {"id":"ops-001","file":"game-operation-ai-workflow.md","category":"workflow","roles":["ai-writing"],"phases":["day60","day90"],"tags":["运营","实验"]},
+  {"id":"safety-001","file":"ai-security-policy.md","category":"policy","roles":["all"],"phases":["day30","day60","day90"],"tags":["隐私","版权","幻觉"]},
+  {"id":"rubric-001","file":"30-60-90-rubric.md","category":"rubric","roles":["all"],"phases":["day30","day60","day90"],"tags":["评估","Boss战"]}
+]

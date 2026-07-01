@@ -29,6 +29,11 @@ export default function PersonalizedPlan() {
         <div><b>为什么这样安排</b>{plan.reasons.map(reason => <p key={reason}>• {reason}</p>)}</div>
         <div><b>优先任务</b>{priorityTitles.map(title => <span key={title}>{title}</span>)}</div>
       </div>
+      {plan.insertedUnits.length > 0 && (
+        <p className="personalized-plan-inserted">
+          <b>AI 已插入补强任务：</b>{plan.insertedUnits.join('；')}
+        </p>
+      )}
       {plan.riskSignals.length > 0 && <p className="personalized-plan-risk"><b>补强信号：</b>{plan.riskSignals.join('；')}</p>}
     </section>
   );

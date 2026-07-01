@@ -4,6 +4,7 @@ import { getResourceColor, getResourceIcon, getResourcesByUnit } from '../data/r
 import UnitCard from './UnitCard';
 import { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { generatePersonalizedPath } from '../agents/pathPlannerAgent';
 
 interface Props {
   role: Capability;
@@ -13,6 +14,8 @@ interface Props {
 export default function PathTimeline({ role, activePhase }: Props) {
   const phases: Phase[] = ['day30', 'day60', 'day90'];
   const capability = CAPABILITIES[role] || CAPABILITIES['ai-image'];
+  const { userProfile } = useApp();
+  const plan = generatePersonalizedPath(userProfile, capability.key, getLearningPath(capability.key));
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto' }}>
@@ -52,7 +55,7 @@ export default function PathTimeline({ role, activePhase }: Props) {
       </section>
       {phases.map(phase => {
         const phaseInfo = PHASES[phase];
-        const units = getLearningPath(role, phase);
+        const units = plan.orderedUnits.filter(unit => unit.phase === phase);
         const isActive = !activePhase || activePhase === phase;
 
         if (!isActive && activePhase) return null;
@@ -126,6 +129,7 @@ export default function PathTimeline({ role, activePhase }: Props) {
                     lesson={lesson}
                     role={role}
                     color={phaseInfo.color}
+                    recommendation={plan.unitReasons[unit.id]}
                   />
                 ))
               ) : Array.from(weekMap.entries()).map(([week, weekUnits]) => (
@@ -166,7 +170,10 @@ export default function PathTimeline({ role, activePhase }: Props) {
                   {/* Unit cards */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {weekUnits.map((unit, idx) => (
-                      <UnitCard key={unit.id} unit={unit} index={idx} />
+                      <div key={unit.id} className={plan.priorityUnitIds.includes(unit.id) ? 'personalized-unit-priority' : ''}>
+                        {plan.unitReasons[unit.id] && <p>AI 优先推荐 · {plan.unitReasons[unit.id]}</p>}
+                        <UnitCard unit={unit} index={idx} />
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -184,11 +191,13 @@ function DailyLessonCard({
   lesson,
   role,
   color,
+  recommendation,
 }: {
   unit: LearningUnit;
   lesson: LearningUnit['dailyPlan'][number];
   role: Capability;
   color: string;
+  recommendation?: string;
 }) {
   const resources = getResourcesByUnit(unit.id, role).slice(0, 2);
   const { progress, submitDailyLesson, undoDailyLesson } = useApp();
@@ -223,6 +232,7 @@ function DailyLessonCard({
       </button>
 
       <div className="daily-lesson-shell">
+        {recommendation && <p className="daily-ai-reason">AI 优先推荐 · {recommendation}</p>}
         {resources.length > 0 && (
           <div className="daily-resource-row">
             {resources.map(resource => (
